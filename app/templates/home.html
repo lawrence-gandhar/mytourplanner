@@ -9,13 +9,17 @@
         }
 
         .main-menu{
-            background-color: orange;
+            background-color: #ffa500;
             padding:10px;
         }
 
         td.current_date{
-            background-color: #eeeeee;
+            background-color: #ffd397;
             font-weight: bold;
+        }
+
+        .table{
+            border-color: #ffd397;
         }
 
     </style>
@@ -28,17 +32,45 @@
         </div>
         <div class="row" style="margin:10px 0px;">
             <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">My Calendar</div>
-                    <div class="card-body">
+                <div class="card" style="padding:0px; height:310px; border:0px;">
+                    <div class="card-header" style="border-bottom:0px; background-color: #ffd397;">My Calendar</div>
+                    <div class="card-body" style="padding:0px;">
                         {{ calendar|safe }}
                     </div>
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header"></div>
-                    <div class="card-body"></div>
+                <div class="card" style="padding:0px; height:310px;">
+                    <div class="card-header" style="border-bottom:0px; background-color: #ffd397;">
+                        My Tours
+                        <span style="display:inline-block; float: right; cursor:pointer; border:1px solid #ffa500; padding: 0px 7px; background-color: #fff;">
+                            Add Plan
+                        </span>
+                    </div>
+                    <div class="card-body" style="padding:0px; height:300px; overflow-y:auto;">
+                        <table class="table table-responsive table-bordered" style="margin:0px;">
+                            <tr>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Source</th>
+                                <th>Destination</th>
+                                <th>Planned On</th>
+                                <th>
+
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>Start Date</td>
+                                <td>End Date</td>
+                                <td>Source</td>
+                                <td>Destination</td>
+                                <td>Planned On</td>
+                                <td>
+                                    
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -49,7 +81,8 @@
 
     $(document).ready(function(){
 
-        $("table.month").addClass("table table-responsive table-stripped table-bordered");
+        $("table.month").addClass("table table-responsive table-bordered");
+       
 
     });
 

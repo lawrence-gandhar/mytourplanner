@@ -18,13 +18,14 @@ class GetCalendar:
 
         rows = soup.find_all("tr")
 
-        html = ['<table border="0" cellpadding="0" cellspacing="0" class="month">']
+        html = ['<table border="0" cellpadding="0" cellspacing="0" class="month" style="margin:0px;">']
 
         for row in rows:
             cells = row.find_all("td")
             for cell in cells:
                 if cell.text.strip() != "":
                     cell["id"] = cell.text
+                    cell["style"] = "width:14%;"
 
                 if cell.text == str(self.current_date.day):
                     cell["class"].append("current_date")

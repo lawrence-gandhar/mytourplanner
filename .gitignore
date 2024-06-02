@@ -2,3 +2,5 @@ travel_planner/*
 db.sqlite3
 manage.py
 *.pyc
+**/migrations/*
+**/__pycache__/*
