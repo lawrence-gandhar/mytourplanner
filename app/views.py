@@ -6,6 +6,9 @@ from django.contrib.auth.decorators import login_required
 
 from app.modules.my_calendar import GetCalendar
 
+from app.app_forms import (
+    TourDataInitialForm
+)
 
 # Create your views here.
 
@@ -32,7 +35,8 @@ def home(request):
 
     calendar = GetCalendar()
     data = {
-        "calendar": calendar.htmlcalendar()
+        "calendar": calendar.htmlcalendar(),
+        "tour_plan_form": TourDataInitialForm()
     }
 
     return render(request, "home.html", data)
