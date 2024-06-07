@@ -18,8 +18,36 @@
             font-weight: bold;
         }
 
+        td.created_date{
+            background-color: #6ec2f7;
+            font-weight: bold;
+        }
+
+        td.planned_date{
+            background-color: #bbfb8b;
+            font-weight: bold;
+        }
+
+        td.travel_start_date{
+            background-color: #539a1e;
+            font-weight: bold;
+            color: #FFFFFF;
+        }
+
         .table{
             border-color: #ffd397;
+            font-size:80%;
+        }
+
+        .table th{
+            text-align: center;
+            background-color: #8f7e6a;
+            color:#ffffff;
+            word-wrap: break-word;
+        }
+
+        .table td{
+            word-wrap: break-word;
         }
 
         .form_fields{
@@ -65,35 +93,16 @@
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="card" style="padding:0px; height:310px;">
+                <div class="card" style="padding:0px; height:310px; border:0px;">
                     <div class="card-header" style="border-bottom:0px; background-color: #ffd397;">
-                        My Tours
+                        My Latest Tours
                         <span data-bs-toggle="offcanvas" data-bs-target="#tourCreatePlanModal-1" style="display:inline-block; float: right; cursor:pointer; border:1px solid #ffa500; padding: 0px 7px; background-color: #fff;">
                             Add Plan
                         </span>
                     </div>
-                    <div class="card-body" style="padding:0px; height:300px; overflow-y:auto;">
-                        <table class="table table-responsive table-bordered" style="margin:0px;">
-                            <tr>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Source</th>
-                                <th>Destination</th>
-                                <th>Planned On</th>
-                                <th>
-
-                                </th>
-                            </tr>
-                            <tr>
-                                <td>Start Date</td>
-                                <td>End Date</td>
-                                <td>Source</td>
-                                <td>Destination</td>
-                                <td>Planned On</td>
-                                <td>
-                                    
-                                </td>
-                            </tr>
+                    <div class="card-body" style="padding:0px; height:230px; overflow-y:auto;">
+                        <table id="latest_tourdata" class="table table-responsive table-bordered" style="margin:0px;">
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>
@@ -183,14 +192,37 @@
 
         $(document).ready(function(){
             $("table.month").addClass("table table-responsive table-bordered");
+
+            $.get("{% url 'tourdata_latest' %}", function(data){
+
+                htm = "<tr> \
+                <th>Source</th> \
+                <th>Destination</th> \
+                <th>Created On</th> \
+                <th>Planned On</th> \
+                <th>Travel Started On</th> \
+                <th>Travel Ended On</th> \
+                </tr> \
+                <tr>";
+
+                $.each(data, function(key,val){
+                    htm += "<td>"+val.source+"</td>";
+                    htm += "<td>"+val.destination+"</td>";
+                    htm += "<td>"+val.created_on+"</td>";
+                    htm += "<td>"+val.plan_to_start_on+"</td>";
+                    htm += "<td>"+val.travel_start_date+"</td>";
+                });
+                htm += "</tr>";
+                $("#latest_tourdata").find("tbody").empty().append(htm);
+            });
+
+            
         });
 
         /*******************************************/
         // Add New Plan
 
-        function add_plan(){
-            
-        }
+        
 
     </script>
 

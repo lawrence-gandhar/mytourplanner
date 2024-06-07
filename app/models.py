@@ -13,6 +13,21 @@ class TourData(models.Model):
         db_index = True
     )
 
+    travel_end_date = models.DateField(
+        auto_now = False, 
+        auto_now_add = False, 
+        blank = True, 
+        null = True, 
+        db_index = True
+    )
+
+    planned_no_days =  models.IntegerField(
+        default = 1,    
+        null = False,
+        blank = False,
+        db_index = True,
+    )
+
     plan_to_start_on = models.DateField(
         auto_now = False,
         auto_now_add = False,

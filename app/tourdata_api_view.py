@@ -17,14 +17,17 @@ from app.models import TourData
 
 @api_view()
 def tourdata_list(request):
-
     if request.method == 'GET': 
-
         queryset = TourData.objects.all()
         serializer = TourDataListSerializers(queryset, many = True)
-
         return JsonResponse(serializer.data, safe=False) 
 
+@api_view()
+def tourdata_latest(request):
+    if request.method == 'GET': 
+        queryset = TourData.objects.filter(travel_start_date__isnull = False).order_by("-id")[:10]
+        serializer = TourDataListSerializers(queryset, many = True)
+        return JsonResponse(serializer.data, safe=False) 
 
 
 class TourPlanCreate(generics.ListCreateAPIView):

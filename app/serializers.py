@@ -19,11 +19,11 @@ class TourDataListSerializers(serializers.ModelSerializer):
     class Meta:
         model = TourData
         fields = (
-            "plan_to_start_on", "travel_start_date", "source", "destination", "budget", 
+            "id", "plan_to_start_on", "travel_start_date", "source", "destination", "budget", 
             "put_on_hold", "no_of_adults", "no_of_children", "reviews", "road_reviews", 
             "traffic_reviews", "overall_road_rating", "overall_tour_rating", 
             "total_spent", "visit_again", "amount_per_head", "final_amount_per_head",
-            "created_on", "modified_on" 
+            "created_on", "modified_on", "planned_no_days", "travel_end_date" 
         )
 
 
@@ -32,7 +32,7 @@ class TourDataInitialSerializers(serializers.ModelSerializer):
         model = TourData
         fields = (
             "plan_to_start_on", "travel_start_date", "source", "destination", "budget", 
-            "put_on_hold", "no_of_adults", "no_of_children"
+            "put_on_hold", "no_of_adults", "no_of_children", "planned_no_days",
         )
 
     
@@ -48,5 +48,5 @@ class TourDataCompleteSerializers(serializers.ModelSerializer):
         model = TourData
         fields = (
             "reviews", "road_reviews", "traffic_reviews", "overall_road_rating", "overall_tour_rating", 
-            "total_spent", "visit_again", "actual_amount_spent_per_head"
+            "total_spent", "visit_again", "actual_amount_spent_per_head", "travel_end_date"
         )

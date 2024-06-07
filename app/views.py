@@ -38,5 +38,5 @@ def home(request):
         "calendar": calendar.htmlcalendar(),
         "tour_plan_form": TourDataInitialForm()
     }
-
+    
     return render(request, "home.html", data)

@@ -15,7 +15,7 @@ class TourDataInitialForm(ModelForm):
         model = TourData
         fields = [
             "travel_start_date", "plan_to_start_on", "source", "destination",
-            "budget", "put_on_hold", "no_of_adults", "no_of_children"
+            "budget", "put_on_hold", "no_of_adults", "no_of_children", "planned_no_days"
         ]
         widgets = {
             "plan_to_start_on": forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
