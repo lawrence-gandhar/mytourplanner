@@ -25,15 +25,25 @@ def tourdata_list(request):
 @api_view()
 def tourdata_latest(request):
     if request.method == 'GET': 
-        queryset = TourData.objects.filter(travel_start_date__isnull = False).order_by("-id")[:10]
+        queryset = TourData.objects.filter(travel_start_date__isnull = False).order_by("-id")[:5]
         serializer = TourDataListSerializers(queryset, many = True)
-        return JsonResponse(serializer.data, safe=False) 
+        return JsonResponse(serializer.data, safe=False)
+
+@api_view()
+def tourdata_planned(request):
+    if request.method == 'GET': 
+        queryset = TourData.objects.filter(
+            travel_start_date__isnull = True, 
+            plan_to_start_on__isnull = False,
+        )[:5]
+
+        serializer = TourDataListSerializers(queryset, many = True)
+        return JsonResponse(serializer.data, safe=False)  
 
 
 class TourPlanCreate(generics.ListCreateAPIView):
-    queryset = None
+    queryset = TourData.objects.all()
     serializer_class = TourDataInitialSerializers
-
 
 
 class TourPlanUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
@@ -46,3 +56,4 @@ class TourComplete(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
     queryset = TourData.objects.all()
     serializer_class = TourDataCompleteSerializers
+
