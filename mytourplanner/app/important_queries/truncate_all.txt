@@ -1,0 +1,3 @@
+TRUNCATE app_tourdata, app_stopsdata,app_extendedtour, 
+	app_viastops,app_mealsdata,app_staydata, app_tolldata, app_mealsitem    
+	RESTART IDENTITY ;

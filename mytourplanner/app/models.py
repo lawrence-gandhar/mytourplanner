@@ -1,9 +1,19 @@
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.contrib.auth.models import User
+from datetime import datetime, timedelta
 
 
 class TourData(models.Model):
+
+    user = models.ForeignKey(
+        User,
+        on_delete = models.CASCADE,
+        db_index = True,
+        null=True,
+        blank=True
+    )
 
     travel_start_date = models.DateField(
         auto_now = False, 
@@ -129,6 +139,10 @@ class TourData(models.Model):
         default = False
     )
 
+    @property
+    def plan_end_date(self):
+        return self.plan_to_start_on + timedelta(days=self.planned_no_days) 
+
 
 @receiver(pre_save, sender=TourData)
 def tourdata_pre_save(sender, instance, **kwargs):
@@ -140,6 +154,14 @@ def tourdata_pre_save(sender, instance, **kwargs):
 # Extended Tour
 
 class ExtendedTour(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete = models.CASCADE,
+        db_index = True,
+        null=True,
+        blank=True
+    )
+
     tour = models.ForeignKey(
         TourData,
         db_index = True,
@@ -183,6 +205,14 @@ def ext_tour_pre_save(sender, instance, **kwargs):
 
 # ViaStops will have possible stop details between the TourData source and Destination
 class ViaStops(models.Model):
+
+    user = models.ForeignKey(
+        User,
+        on_delete = models.SET_NULL,
+        db_index = True,
+        null=True,
+        blank=True
+    )
 
     tour = models.ForeignKey(
         TourData,
@@ -274,6 +304,14 @@ class StopsData(models.Model):
         ("7", "AIRPORT"),
         ("8", "TRAIN STATION"),
         ("9", "BUS STOP")
+    )
+
+    user = models.ForeignKey(
+        User,
+        on_delete = models.SET_NULL,
+        db_index = True,
+        null=True,
+        blank=True
     )
 
     tour = models.ForeignKey(
@@ -461,6 +499,14 @@ def stopsdata_pre_save(sender, instance, **kwargs):
 
 # Hotels and Stay
 class StayData(models.Model):
+
+    user = models.ForeignKey(
+        User,
+        on_delete = models.SET_NULL,
+        db_index = True,
+        null=True,
+        blank=True
+    )
 
     stopsdata = models.ForeignKey(
         StopsData,
@@ -734,6 +780,14 @@ def staydata_pre_save(sender, instance, **kwargs):
 # Tolls Entry
 class TollData(models.Model):
 
+    user = models.ForeignKey(
+        User,
+        on_delete = models.SET_NULL,
+        db_index = True,
+        null=True,
+        blank=True
+    )
+
     stopsdata = models.ForeignKey(
         StopsData,
         db_index = True,
@@ -840,6 +894,14 @@ class MealsData(models.Model):
         ("5", "SNACKS"),
         ("6", "DINNER"),
         ("7", "DRINKS")
+    )
+
+    user = models.ForeignKey(
+        User,
+        on_delete = models.SET_NULL,
+        db_index = True,
+        null=True,
+        blank=True
     )
 
     stopsdata = models.ForeignKey(
@@ -956,6 +1018,14 @@ def mealsdata_pre_save(sender, instance, **kwargs):
 
 
 class MealsItem(models.Model):
+
+    user = models.ForeignKey(
+        User,
+        on_delete = models.SET_NULL,
+        db_index = True,
+        null=True,
+        blank=True
+    )
 
     meal = models.ForeignKey(
         MealsData,

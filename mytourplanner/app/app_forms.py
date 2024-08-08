@@ -14,12 +14,11 @@ class TourDataInitialForm(ModelForm):
     class Meta:
         model = TourData
         fields = [
-            "travel_start_date", "plan_to_start_on", "source", "destination",
-            "budget", "put_on_hold", "no_of_adults", "no_of_children", "planned_no_days"
+            "plan_to_start_on", "planned_no_days", "source", "destination",
+            "budget", "put_on_hold", "no_of_adults", "no_of_children",
         ]
         widgets = {
-            "plan_to_start_on": forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
-            "travel_start_date": forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
+            "plan_to_start_on": forms.DateInput(attrs={'class':'form-control', 'type':'date', 'required':True}),
         }
     
 
