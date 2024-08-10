@@ -15,8 +15,10 @@ class GetCalendar:
         self.queryset = queryset
         self._planned_dates = {}
         self._planned_index = {}
+        self._selected_colors = []
         self._tourdata = self._get_calendar_data()
         self._planned_dates_formatter()
+        
 
     #============================================================
     # Create & Return HtmlCalender with all details
@@ -40,8 +42,14 @@ class GetCalendar:
             "#990000", "#800000", # red shades
             "#009999", "#008080", "#006666" # teal shades
         )
-        
-        return random.choice(color_code).upper()
+
+        color = random.choice(color_code)
+
+        if color not in self._selected_colors:
+            self._selected_colors.append(color)
+            return color.upper()
+        else:
+            self._generate_color_code()
 
     #============================================================
     # Generate Dictionary for Planned Dates Formatting
