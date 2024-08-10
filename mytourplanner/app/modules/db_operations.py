@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from app.models import (
     TourData,
     TollData,
@@ -6,5 +8,9 @@ from app.models import (
     StopsData
 )
 
-def fetch_tourdata(limit=None, page=None, **kwargs):
-    pass
+def fetch_tourdata(user_id, limit=None, page=None, **kwargs):
+    queryset = TourData.objects.filter(
+        user_id = user_id
+    )
+
+    return queryset

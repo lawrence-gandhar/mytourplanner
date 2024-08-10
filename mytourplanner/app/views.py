@@ -16,6 +16,7 @@ from app.models import (
 )
 
 from app.modules.my_calendar import GetCalendar
+from app.modules import db_operations as dbops
 
 from app.app_forms import (
     TourDataInitialForm,
@@ -59,25 +60,42 @@ class LoginView(View):
 def home(request):
 
     if request.method == "GET":
-        calendar = GetCalendar(request.session["user_id"])
+        user_id = request.session["user_id"]
+        queryset = dbops.fetch_tourdata(user_id)
+        calendar = GetCalendar(user_id, queryset)
 
-        completed_tours = TourData.objects.filter(
-            user_id = request.session["user_id"], 
-            travel_end_date__isnull = True
-        ).reverse()[:5]
+        today = datetime.strptime(datetime.today().strftime("%Y-%m-%d"),"%Y-%m-%d").date()
 
-        upcoming_tours = TourData.objects.filter(
-            user_id = request.session["user_id"], 
+        planned_tours = queryset.filter(
             travel_start_date__isnull = True,
-            plan_to_start_on__gte = datetime.today().strftime("%Y-%m-%d")
+            travel_end_date__isnull = True,
+            plan_to_start_on__isnull = False
+        ).values(
+            'id', 'created_on', 'plan_to_start_on', 'travel_start_date', 'travel_end_date', 
+            'source', 'destination', 'put_on_hold'
         )
 
+        completed_tours = queryset.filter(
+            travel_end_date__isnull = False
+        ).values(
+            'id', 'created_on', 'plan_to_start_on', 'travel_start_date', 'travel_end_date', 'source', 'destination'
+        )
+
+        upcoming_tours= []
+        unfinished_tours = []
+        
+        for row in planned_tours:
+            if row["plan_to_start_on"] < today or row["put_on_hold"]:
+                unfinished_tours.append(row)
+            elif row["plan_to_start_on"] > today:
+                upcoming_tours.append(row)
 
         data = {
             "calendar": calendar.htmlcalendar(),
             "tour_plan_form": TourDataInitialForm(),
             "completed_tours": completed_tours,
-            "upcoming_tours": upcoming_tours
+            "upcoming_tours": upcoming_tours,
+            "unfinished_tours": unfinished_tours
         }
             
         return render(request, "home.html", data)

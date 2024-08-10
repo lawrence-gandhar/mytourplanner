@@ -18,24 +18,29 @@
 
         {% include 'alert_messages.html' %}
 
-        <div class="row" style="margin:10px 0px;">
-            <div class="col-md-6">
-                <div class="card" style="padding:0px; height:310px; border:0px;">
-                    <div class="card-header" style="border-bottom:0px; background-color: #ffd397;">My Calendar</div>
-                    <div class="card-body" style="padding:0px;height:230px; overflow-y:auto;">
+        <div class="row">
+            <div class="col-md-6  col-sm-12" style="margin:10px 0px;">
+                <div class="card" style="padding:0px; height:290px; border:0px;">
+                    <div class="card-header card-border" style="border-bottom:0px; background-color: #ffd397;">
+                        My Calendar
+                        <button type="button" class="btn btn-sm bordered-button" style="float:right;padding:0px 5px;" data-bs-toggle="offcanvas" data-bs-target="#tourCreatePlanModal-1">
+                            Add Plan
+                        </button>
+                    </div>
+                    <div class="card-body card-border" style="padding:0px;height:230px; overflow-y:auto;">
                         {{ calendar|safe }}
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card" style="padding:0px; height:310px; border:0px;">
-                    <div class="card-header" style="border-bottom:0px; background-color: #ffd397;">
+            <div class="col-md-6 col-sm-12" style="margin:10px 0px;">
+                <div class="card" style="padding:0px; height:290px; border:0px;">
+                    <div class="card-header card-border" style="border-bottom:0px; background-color: #ffd397;">
                         Upcoming Tour Plans
-                        <span data-bs-toggle="offcanvas" data-bs-target="#tourCreatePlanModal-1" style="display:inline-block; float: right; cursor:pointer; border:1px solid #ffa500; padding: 0px 7px; background-color: #fff;">
-                            Add Plan
-                        </span>
+                        <button type="button" class="btn btn-sm bordered-button" style="float:right;padding:0px 5px;">
+                            View All
+                        </button>
                     </div>
-                    <div class="card-body" style="padding:0px;height:230px; overflow-y:auto;">
+                    <div class="card-body card-border" style="padding:0px;height:230px; overflow-y:auto;">
                         <table id="upcoming_tourdata" class="table table-responsive table-bordered" style="margin:0px;">
                             <tbody>
                                 <tr> 
@@ -65,13 +70,16 @@
                 </div>
             </div>
         </div>
-        <div class="row" style="margin:10px 0px;">
-            <div class="col-md-6">
-                <div class="card" style="padding:0px; height:310px; border:0px;">
-                    <div class="card-header" style="border-bottom:0px; background-color: #ffd397;">
+        <div class="row">
+            <div class="col-md-6 col-sm-12" style="margin:10px 0px;">
+                <div class="card" style="padding:0px; height:290px; border:0px;">
+                    <div class="card-header card-border" style="border-bottom:0px; background-color: #ffd397;">
                         Completed Tours
+                        <button type="button" class="btn btn-sm bordered-button" style="float:right;padding:0px 5px;">
+                            View All
+                        </button>
                     </div>
-                    <div class="card-body" style="padding:0px; height:230px; overflow-y:auto;">
+                    <div class="card-body card-border" style="padding:0px; height:230px; overflow-y:auto;">
                         <table id="latest_tourdata" class="table table-responsive table-bordered" style="margin:0px;">
                             <tbody>
                                 <tr> 
@@ -102,19 +110,174 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="card" style="padding:0px; height:310px; border:0px;">
-                    <div class="card-header" style="border-bottom:0px; background-color: #ffd397;">
-                        Tours On Hold
+            <div class="col-md-6 col-sm-12" style="margin:10px 0px;">
+                <div class="card" style="padding:0px; height:290px; border:0px;">
+                    <div class="card-header card-border" style="border-bottom:0px; background-color: #ffd397;">
+                        Planned But Not Started
+                        <button type="button" class="btn btn-sm bordered-button" style="float:right;padding:0px 5px;">
+                            View All
+                        </button>
                     </div>
-                    <div class="card-body" style="padding:0px;">
+                    <div class="card-body card-border" style="padding:0px;">
                         <table id="onhold_tourdata" class="table table-responsive table-bordered" style="margin:0px;">
-                            <tbody></tbody>
+                            <tbody>
+                                <tr> 
+                                    <th>Source</th> 
+                                    <th>Destination</th> 
+                                    <th>Created On</th> 
+                                    <th>Planned For</th> 
+                                    <th>On Hold</th> 
+                                    <th>Action</th> 
+                                </tr>
+                                {% for row in unfinished_tours %}
+                                    <tr>
+                                        <td>{{row.source|upper}}</td>
+                                        <td>{{row.destination|upper}}</td>
+                                        <td>{{row.created_on|date_format}}</td>
+                                        <td>{{row.plan_to_start_on}}</td>
+                                        <td style="text-align:center;">{% tick_mark row.put_on_hold %}</td>
+                                        <td style="text-align: center;">
+                                            <i class="fas fa-pencil" title="Edit Record" style="cursor:pointer;"></i>
+                                            <i class="fas fa-trash" title="Delete Record" style="cursor:pointer; color:#ff0000; margin-left:10px;"></i>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2 col-sm-4" style="margin:10px 0px;">
+                <div class="card no-border" style="height:100px; background-color: #8e0cdf; color:#FFFFFF;">
+                    <div class="card-header no-border">
+                        Total Plans
+                    </div>
+                    <div class="card-body no-border">
+    
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-4" style="margin:10px 0px;">
+                <div class="card  no-border" style="height:100px; background-color: #4b5fed; color:#FFFFFF;">
+                    <div class="card-header no-border">
+                        Tours Completed
+                    </div>
+                    <div class="card-body no-border">
+    
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-4" style="margin:10px 0px;">
+                <div class="card no-border" style="height:100px; background-color: #3b427a; color:#FFFFFF;">
+                    <div class="card-header no-border">
+                        Tours On-hold
+                    </div>
+                    <div class="card-body no-border">
+    
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-4" style="margin:10px 0px;">
+                <div class="card no-border" style="height:100px; background-color: #7c7a7c; color:#FFFFFF;">
+                    <div class="card-header no-border">
+                        Total Budget
+                    </div>
+                    <div class="card-body no-border">
+    
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-4" style="margin:10px 0px;">
+                <div class="card no-border" style="height:100px; background-color: #228d8d; color:#FFFFFF;">
+                    <div class="card-header no-border">
+                        Total Ependiture
+                    </div>
+                    <div class="card-body no-border">
+    
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-4" style="margin:10px 0px;">
+                <div class="card no-border" style="height:100px; background-color: #005670; color:#FFFFFF;">
+                    <div class="card-header no-border">
+                        Total Distance Traveled
+                    </div>
+                    <div class="card-body no-border">
+    
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 col-sm-4" style="margin:10px 0px;">
+                <div class="card no-border" style="height:100px; background-color: #ffd397; color:#FFFFFF;">
+                    <div class="card-header no-border">
+                        Highest Budget
+                    </div>
+                    <div class="card-body no-border">
+    
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-4" style="margin:10px 0px;">
+                <div class="card no-border" style="height:100px; background-color: #ffd397; color:#FFFFFF;">
+                    <div class="card-header no-border">
+                        Lowest Budget
+                    </div>
+                    <div class="card-body no-border">
+    
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-4" style="margin:10px 0px;">
+                <div class="card no-border" style="height:100px; background-color: #ffd397; color:#FFFFFF;">
+                    <div class="card-header no-border">
+                        Highest Expenditure
+                    </div>
+                    <div class="card-body no-border">
+    
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-4" style="margin:10px 0px;">
+                <div class="card no-border" style="height:100px; background-color: #ffd397; color:#FFFFFF;">
+                    <div class="card-header no-border">
+                        Lowest Expenditure
+                    </div>
+                    <div class="card-body no-border">
+    
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-4" style="margin:10px 0px;">
+                <div class="card no-border" style="height:100px; background-color: #ffd397; color:#FFFFFF;">
+                    <div class="card-header no-border">
+                        Longest Distance
+                    </div>
+                    <div class="card-body no-border">
+    
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-4" style="margin:10px 0px;">
+                <div class="card no-border" style="height:100px; background-color: #ffd397; color:#FFFFFF;">
+                    <div class="card-header no-border">
+                        Shortest Distance
+                    </div>
+                    <div class="card-body no-border">
+    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
     </div>
 
     <!-- Canvas for Add Tour -->

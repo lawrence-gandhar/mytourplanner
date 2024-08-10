@@ -10,129 +10,104 @@ class GetCalendar:
     _calendar_output = ""
     _current_date = datetime.now()
 
-    def __init__(self, user_id=None):
+    def __init__(self, user_id=None, queryset=None):
         self._user_id = user_id
+        self.queryset = queryset
         self._planned_dates = {}
         self._planned_index = {}
         self._tourdata = self._get_calendar_data()
-        self._planned_dates_colors()
+        self._planned_dates_formatter()
 
+    #============================================================
+    # Create & Return HtmlCalender with all details
+    #============================================================
     def htmlcalendar(self):
         text_cal = calendar.HTMLCalendar(firstweekday=0)
         self._calendar_output = text_cal.formatmonth(self._current_date.year, self._current_date.month)
-
-        self._date_highlights()
+        self._complete_soup()
         return self._calendar_output
     
-
+    #============================================================
+    # Generate Color Codes for planned dates
+    #============================================================
     def _generate_color_code(self):
-        color_code = []
-        count = 1
-        while count <3:
-            hex_value = str(hex(random.randint(0,255))).replace("0x", "")
+        color_code = (
+            "#003cb3", "#003399", "#002b80", # blue shades
+            "#008000", "#006600", "#004d00", "#336600", "#264d00", # Green shades
+            "#990099", "#800080", "#660066", # purple shades
+            "#b30059", "#99004d", "#800040", # pink shades
+            "#cc0052", "#b30047", "#99003d", # crimson shades
+            "#990000", "#800000", # red shades
+            "#009999", "#008080", "#006666" # teal shades
+        )
+        
+        return random.choice(color_code).upper()
 
-            if len(hex_value) < 2:
-                count = count-1
-            else:
-                count = count + 1
-                color_code.append(hex_value)
-        return f"#78{''.join(color_code[:3]).upper()}"
-
-
-    def _planned_dates_colors(self):
+    #============================================================
+    # Generate Dictionary for Planned Dates Formatting
+    #============================================================
+    def _planned_dates_formatter(self):
         for record in self._tourdata:
 
-            start_idx = int(record.plan_to_start_on.strftime("%d"))
+            start_idx = int(record["plan_to_start_on"].strftime("%d"))
 
             self._planned_dates.update({
-                str(record.id)+"_"+str(int(record.plan_to_start_on.strftime("%d"))): {
+                str(int(record["plan_to_start_on"].strftime("%d"))): {
                     "color": self._generate_color_code(),
-                    "date_range": list(range(start_idx, start_idx+record.planned_no_days+1)),
-                    "tour": f"{record.source.upper()} to {record.destination.upper()}"
+                    "date_range": list(range(start_idx, start_idx+record["planned_no_days"]+1)),
+                    "tour": f"{record["source"].upper()} to {record["destination"].upper()}"
                 }
             }) 
 
+    #============================================================
+    # Fetch Queryset
+    #============================================================
+    def _get_calendar_data(self):
 
-    def _date_highlights(self):
+        created_on_gte = datetime(self._current_date.year, self._current_date.month, 1)
+        created_on_lte = datetime(self._current_date.year, self._current_date.month + 1, 1) + timedelta(days=-1)
+
+        queryset = self.queryset.filter(
+            created_on__gte =  created_on_gte,
+            created_on__lte = created_on_lte
+        ).values(
+            'id', 'created_on', 'plan_to_start_on', 'travel_start_date', 'travel_end_date', 
+            'source', 'destination', 'planned_no_days'
+        )
+
+        return queryset
+    
+    #============================================================
+    # Put all details in the Calendar
+    #============================================================
+    def _complete_soup(self):
         soup = BeautifulSoup(self._calendar_output, features="html.parser")
-
         rows = soup.find_all("tr")
 
-        html = ['<table border="0" cellpadding="0" cellspacing="0" class="month" style="margin:0px;">']
-
-        tour_created_dates = [str(int(row.created_on.strftime("%d"))) for row in self._tourdata]
-
-        planned_dates_key = list(x.split("_")[1] for x in list(self._planned_dates.keys()))
-
         tour_started_dates = [
-            str(int(row.travel_start_date.strftime("%d"))) 
+            str(int(row["travel_start_date"].strftime("%d"))) 
             for row in self._tourdata
-            if row.travel_start_date is not None
+            if row["travel_start_date"] is not None
         ]
 
-        index_counter = 0
         for row in rows:
-            html.append("<tr>")
-            index_counter += 1
             cells = row.find_all("td")
             for cell in cells:
-                index_counter += 1
                 if cell.text.strip() != "":
                     cell["id"] = cell.text
-                    cell["style"] = "width:14%;"
+                    cell["style"] = "width:14%;text-align:center;padding:5px 0px 5px 0px;"
 
                 if cell.text == str(self._current_date.day):
                     cell["class"].append("current_date")
 
-                if cell.text in tour_created_dates:
-                    cell["class"].append("created_date")
-
                 if cell.text in tour_started_dates:
                     cell["class"].append("travel_start_date")
 
-                if cell.text in planned_dates_key:
-                    cell["class"].append("planned_date")
-                    self._planned_index.update({cell.text: index_counter})
-
-                html.append(str(cell))
-            html.append("</tr>")
-            index_counter += 1
-        html.append("</table>")
-        index_counter += 1
-
-        self._calendar_output = ''.join(html)
-        self._planned_date_highlights(html)
-
-
-    def _planned_date_highlights(self, html):
-        soup = BeautifulSoup(self._calendar_output, features="html.parser")
-        temp_html = html
-        html_dict = {}
-        html_enum = enumerate(html)
-        for x in html_enum:
-            html_dict.update({x[1]:x[0]})
-
-        for key,val in self._planned_dates.items():
-
-            for x in val["date_range"]:
-                cell = soup.find(id=str(x))
-                print(cell)
+        for key, val in self._planned_dates.items():
+            for tour in val["date_range"]:
+                cell = soup.find(id=str(tour))
                 new_tag = soup.new_tag("span", **{'class':'planned_tour'})
-                new_tag.string = val["tour"]
-                new_tag["style"] = f'background-color:{val["color"]};'
+                new_tag["style"] = f"background-color:{val["color"]}"
+                new_tag.string = val["tour"].upper()
                 cell.append(new_tag)
-                # temp_html[html_dict[idx]] = str(cell)
-
-
-        print(html, temp_html, html_dict)
-        self._calendar_output = ''.join(temp_html)
-
-
-    def _get_calendar_data(self):
-        queryset = TourData.objects.filter(
-            user_id = self._user_id,
-            created_on__gte =  datetime(self._current_date.year, self._current_date.month, 1),
-            created_on__lte = datetime(self._current_date.year, self._current_date.month + 1, 1) + timedelta(days=-1)
-        )
-
-        return queryset
+        self._calendar_output = soup.prettify()

@@ -143,6 +143,19 @@ class TourData(models.Model):
     def plan_end_date(self):
         return self.plan_to_start_on + timedelta(days=self.planned_no_days) 
 
+    class Meta:
+        index_together = [
+            ['travel_end_date', 'user'],
+            ['created_on', 'user'],
+            ['travel_start_date', 'travel_end_date', 'plan_to_start_on', 'user'],
+            ['id', 'user', 'created_on'],
+            ['id', 'created_on', 'plan_to_start_on', 'travel_start_date', 'travel_end_date', 
+            'source', 'destination', 'planned_no_days', 'user'],
+            ['id', 'created_on', 'plan_to_start_on', 'travel_start_date', 'travel_end_date', 
+            'source', 'destination', 'planned_no_days', 'modified_on', 'budget', 'put_on_hold',
+            'no_of_adults', 'no_of_children', 'overall_road_rating', 'overall_tour_rating',
+            'total_spent', 'visit_again', 'user']
+        ]
 
 @receiver(pre_save, sender=TourData)
 def tourdata_pre_save(sender, instance, **kwargs):
