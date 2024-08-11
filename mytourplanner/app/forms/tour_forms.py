@@ -1,9 +1,8 @@
-from django.forms import ModelForm
 from django import forms
-from app.models import TourData, ViaStops, StopsData, StayData, MealsData
+from app.models import TourData
 
 
-class TourDataInitialForm(ModelForm):
+class TourDataInitialForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,8 +20,25 @@ class TourDataInitialForm(ModelForm):
             "plan_to_start_on": forms.DateInput(attrs={'class':'form-control', 'type':'date', 'required':True}),
         }
     
+class TourNextForm(forms.ModelForm):
 
-class TourDataUpdateForm(ModelForm):
+    def __init__(self, *args, **kwargs):    
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control form_fields'
+            
+    class Meta:
+        model = TourData
+        fields = [
+            "travel_start_date", "travel_end_date", "budget"  
+        ]
+        widgets = {
+            "travel_start_date": forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
+            "travel_end_date": forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
+        }
+
+
+class TourDataUpdateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

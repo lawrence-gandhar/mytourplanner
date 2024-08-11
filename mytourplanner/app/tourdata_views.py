@@ -3,13 +3,19 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseNotFound
 from django.forms.models import model_to_dict
 from django.contrib import messages
+from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from app.models import TourData
 
-from app.app_forms import (
+from app.forms.tour_forms import (
     TourDataInitialForm,
+    TourNextForm,
     TourDataUpdateForm
 )
+
+from app.modules.tour_counters import TourCounters as tc
+from app.modules import db_operations as dbops 
 
 from datetime import datetime
 
@@ -27,7 +33,9 @@ def check_planned_date(request):
         query = TourData.objects.filter(plan_to_start_on=planned_date).count()
         return HttpResponse(query)
 
-
+# =====================================================
+# Add TourData
+# =====================================================
 @login_required(login_url="login")
 def add_tour(request):
     if request.method == "POST":
@@ -42,10 +50,37 @@ def add_tour(request):
 
             messages.add_message(request, messages.SUCCESS, msg)
 
-        return redirect("home")
+        return redirect("tour_next_step", ins.pk)
     else:
         return HttpResponseNotFound("Method Not Allowed")
 
+# =====================================================
+# Next Steps for TourData
+# =====================================================
+class TourNextStep(LoginRequiredMixin, View):
+
+    def get(self, request, id):
+        self._user_id = request.session["user_id"]
+        self._data = {}
+
+        ins = dbops.get_tourdata(id)
+        if ins:
+            self._data.update({
+                "tour_next_form":TourNextForm(instance=ins, prefix="tourdata"), 
+                "ins": ins
+            })
+
+            print(self._data)
+        else:
+            return redirect("home")
+
+        return render(request, "tour_next_step.html", self._data)
+
+
+    def post(self, request):
+        self._user_id = request.session["user_id"]
+
+        return HttpResponse(1)
 
 
 # =====================================================

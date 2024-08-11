@@ -1,6 +1,5 @@
 import app.views as app_view
 import app.tourdata_views as tour_view
-import app.tourdata_api_view as tour_api_view
 from django.urls import path
 
 # Home Views 
@@ -17,11 +16,6 @@ urlpatterns +=[
 # CRUD TourData
 urlpatterns += [ 
     path("add_tour/", tour_view.add_tour, name="add_tour"),
+    path("tour_next_step/<int:id>/", tour_view.TourNextStep.as_view(), name="tour_next_step"),
     path("update_tour/", tour_view.update_tour, name="update_tour"),
-]
-
-# Tour Data APIs
-urlpatterns += [
-    path("tourdata_latest/", tour_api_view.tourdata_latest, name="tourdata_latest"),
-    path("tourdata_planned/", tour_api_view.tourdata_planned, name="tourdata_planned")
 ]

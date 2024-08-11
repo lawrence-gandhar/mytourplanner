@@ -9,7 +9,7 @@ class TourData(models.Model):
 
     user = models.ForeignKey(
         User,
-        on_delete = models.CASCADE,
+        on_delete = models.SET_NULL,
         db_index = True,
         null=True,
         blank=True
@@ -164,8 +164,79 @@ def tourdata_pre_save(sender, instance, **kwargs):
         instance.destination = instance.destination.lower().strip()
         
 
-# Extended Tour
+# Travel Mode
+class TravelMode(models.Model):
+    TRAVELMODE_CHOICES = (
+        ('1', 'FLIGHT'),
+        ('2', 'TRAIN'),
+        ('3', 'BUS'),
+        ('4', 'CAR'),
+        ('5', 'BIKE'),
+        ('6', 'RENTAL/WALK'),
+    )
 
+    user = models.ForeignKey(
+        User,
+        db_index = True,
+        on_delete = models.SET_NULL,
+        null = True,
+        blank = True
+    )
+
+    tour = models.ForeignKey(
+        TourData,
+        db_index = True,
+        on_delete = models.SET_NULL,
+        null = True,
+        blank = True
+    )
+
+    travel_mode = models.CharField(
+        default = '1',
+        db_index = True,
+        max_length = 1,
+        choices = TRAVELMODE_CHOICES,
+        null = False,
+        blank = False
+    )
+
+    source = models.CharField(
+        null = False,
+        blank = False,
+        db_index = True,
+        max_length = 250
+    )
+
+    destination = models.CharField(
+        null = False,
+        blank = False,
+        db_index = True,
+        max_length = 250
+    )
+
+    distance = models.DecimalField(
+        decimal_places = 2,
+        max_digits = 10,
+        db_index = True,
+        default = 0.00,
+    )
+
+    cost = models.DecimalField(
+        decimal_places = 2,
+        max_digits = 10,
+        db_index = True,
+        default = 0.00,
+    )
+
+    class Meta:
+        index_together = [
+            ['user', 'travel_mode', 'distance', 'cost'],
+            ['tour', 'travel_mode', 'distance', 'cost'],
+            ['user', 'tour', 'travel_mode', 'distance', 'cost']
+        ]
+
+
+# Extended Tour
 class ExtendedTour(models.Model):
     user = models.ForeignKey(
         User,
@@ -188,6 +259,13 @@ class ExtendedTour(models.Model):
         blank = False,
         db_index = True,
         max_length = 250
+    )
+
+    travel_mode = models.ForeignKey(
+        TravelMode,
+        on_delete = models.SET_NULL,
+        null = True,
+        blank = True,
     )
 
     start_date =  models.DateField(
@@ -232,6 +310,13 @@ class ViaStops(models.Model):
         db_index = True,
         on_delete = models.SET_NULL,
         null = True
+    )
+
+    travel_mode = models.ForeignKey(
+        TravelMode,
+        on_delete = models.SET_NULL,
+        null = True,
+        blank = True,
     )
 
     halt_name = models.CharField(

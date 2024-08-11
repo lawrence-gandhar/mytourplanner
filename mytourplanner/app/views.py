@@ -17,18 +17,13 @@ from app.models import (
 
 from app.modules.my_calendar import GetCalendar
 from app.modules import db_operations as dbops
+from app.modules import custom_decorators as cds
+from app.modules import tour_counters as tc
 
-from app.app_forms import (
+from app.forms.tour_forms import (
     TourDataInitialForm,
     TourDataUpdateForm
 )
-
-# mixin
-class LoginRequiredMixin(object):
-
-    @classmethod
-    def as_view(cls):
-        return login_required(super(LoginRequiredMixin, cls).as_view())
 
 # Create your views here.
 
@@ -58,47 +53,35 @@ class LoginView(View):
 # =====================================================
 @login_required(login_url="login")
 def home(request):
-
     if request.method == "GET":
         user_id = request.session["user_id"]
         queryset = dbops.fetch_tourdata(user_id)
         calendar = GetCalendar(user_id, queryset)
-
-        today = datetime.strptime(datetime.today().strftime("%Y-%m-%d"),"%Y-%m-%d").date()
-
-        planned_tours = queryset.filter(
-            travel_start_date__isnull = True,
-            travel_end_date__isnull = True,
-            plan_to_start_on__isnull = False
-        ).values(
-            'id', 'created_on', 'plan_to_start_on', 'travel_start_date', 'travel_end_date', 
-            'source', 'destination', 'put_on_hold'
-        )
-
-        completed_tours = queryset.filter(
-            travel_end_date__isnull = False
-        ).values(
-            'id', 'created_on', 'plan_to_start_on', 'travel_start_date', 'travel_end_date', 'source', 'destination'
-        )
-
         upcoming_tours= []
         unfinished_tours = []
-        
+        completed_tours = []
+        today = datetime.strptime(datetime.today().strftime("%Y-%m-%d"),"%Y-%m-%d").date()
+
+        planned_tours = dbops.fetch_planned_tours(queryset=queryset)
+
+        tour_counters = tc.TourCounters(request.session["user_id"])
+
         for row in planned_tours:
             if row["plan_to_start_on"] < today or row["put_on_hold"]:
                 unfinished_tours.append(row)
             elif row["plan_to_start_on"] > today:
                 upcoming_tours.append(row)
 
-        data = {
+        context = {
             "calendar": calendar.htmlcalendar(),
             "tour_plan_form": TourDataInitialForm(),
-            "completed_tours": completed_tours,
+            "completed_tours": dbops.fetch_completed_tours(queryset=queryset),
             "upcoming_tours": upcoming_tours,
             "unfinished_tours": unfinished_tours
         }
             
-        return render(request, "home.html", data)
+        return render(request, "home.html", context)
     else:
         return HttpResponseNotFound("Method Not Allowed") 
+
 

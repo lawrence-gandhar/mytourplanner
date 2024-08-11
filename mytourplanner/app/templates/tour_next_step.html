@@ -1,0 +1,127 @@
+{% load static %}
+{% load custom_tags %}
+<html>
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    {% include 'styles.html' %}
+
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row main-menu">
+            <span id="brand">MyTravelPlanner</span>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="margin-top:10px;">
+                <div class="card">
+                    <div class="card-header card-border" style="border-bottom:0px; background-color: #ffd397;">
+                        Tour Plan Basic Details
+                    </div>
+                    <div class="card-body card-border" style="padding:0px;"> 
+                        <table class="table table-bordered table-responsive">
+                            <tr>
+                                <th class="left-align td-orange-bg">Source</th>
+                                <th class="left-align white-bg width-30">
+                                    {{ins.source|upper}}
+                                </th>
+                                <th class="left-align td-orange-bg">Destination</th>
+                                <th class="left-align white-bg width-30">
+                                    {{ins.destination|upper}}
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="left-align td-orange-bg">Planned On</th>
+                                <th class="left-align white-bg width-30">
+                                    {{ins.plan_to_start_on|date:"d b, Y"|upper}}
+                                </th>
+                                <th class="left-align td-orange-bg">Planned No.of Days</th>
+                                <th class="left-align white-bg width-30">
+                                    {{ins.planned_no_days}}
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="left-align td-orange-bg">No. of Adults</th>
+                                <th class="left-align white-bg width-30">
+                                    {{ins.no_of_adults}}
+                                </th>
+                                <th class="left-align td-orange-bg">No. of Children</th>
+                                <th class="left-align white-bg width-30">
+                                    {{ins.no_of_children}}
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="left-align td-orange-bg">Budget</th>
+                                <th class="left-align white-bg width-30">
+                                    {{ins.budget}}
+                                </th>
+                                <th class="left-align td-orange-bg">Created On</th>
+                                <th class="left-align white-bg width-30">
+                                    {{ins.created_on|date:"d b, Y"|upper}}
+                                </th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="margin-top:10px;">
+                <div class="card">
+                    <div class="card-header card-border" style="border-bottom:0px; background-color: #ffd397;">
+                        Tour Plan Next Steps
+                    </div>
+                    <div class="card-body card-border" style="padding:0px;">
+                        <nav>
+                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                <button class="nav-link active" id="step_2" data-bs-toggle="tab" data-bs-target="#nav-home" 
+                                type="button" role="tab" aria-controls="nav-home" aria-selected="true">Home</button>
+                                <button class="nav-link" id="step_3" data-bs-toggle="tab" data-bs-target="#nav-profile" 
+                                type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Profile</button>
+                                <button class="nav-link" id="step_4" data-bs-toggle="tab" data-bs-target="#nav-contact" 
+                                type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Contact</button>
+                                <button class="nav-link" id="step_5" data-bs-toggle="tab" data-bs-target="#nav-disabled" 
+                                type="button" role="tab" aria-controls="nav-disabled" aria-selected="false" disabled>Disabled</button>
+                            </div>
+                        </nav>
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="step_2" tabindex="0">
+                                <form id="tourCreateForm" action="{% url 'tour_next_step' %}" method="post" class="form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="id">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="id_tourdat-travel_start_date" class="form-label">Travel Start Date</label>
+                                            {{ tour_next_form.travel_start_date|safe }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="id_tourdat-travel_start_date" class="form-label">Budget</label>
+                                            {{ tour_next_form.budget|safe }}
+                                        </div>
+                                        {% include 'alert_messages.html' %}
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="step_3" tabindex="0">
+                    
+                            </div>
+                            <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="step_4" tabindex="0">
+                    
+                            </div>
+                            <div class="tab-pane fade" id="nav-disabled" role="tabpanel" aria-labelledby="step_5" tabindex="0">
+                    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
