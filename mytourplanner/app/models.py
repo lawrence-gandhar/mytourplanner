@@ -3,7 +3,7 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
-
+from app.modules import custom_constants as cs
 
 class TourData(models.Model):
 
@@ -166,14 +166,6 @@ def tourdata_pre_save(sender, instance, **kwargs):
 
 # Travel Mode
 class TravelMode(models.Model):
-    TRAVELMODE_CHOICES = (
-        ('1', 'FLIGHT'),
-        ('2', 'TRAIN'),
-        ('3', 'BUS'),
-        ('4', 'CAR'),
-        ('5', 'BIKE'),
-        ('6', 'RENTAL/WALK'),
-    )
 
     user = models.ForeignKey(
         User,
@@ -195,7 +187,7 @@ class TravelMode(models.Model):
         default = '1',
         db_index = True,
         max_length = 1,
-        choices = TRAVELMODE_CHOICES,
+        choices = cs.TRAVELMODE_CHOICES,
         null = False,
         blank = False
     )
@@ -221,7 +213,35 @@ class TravelMode(models.Model):
         default = 0.00,
     )
 
-    cost = models.DecimalField(
+    no_of_adults =  models.IntegerField(
+        default = 1,    
+        null = False,
+        blank = False,
+        db_index = True,
+    )
+
+    no_of_children =  models.IntegerField(
+        default = 0,    
+        null = False,
+        blank = False,
+        db_index = True,
+    )
+
+    vendor = models.CharField(
+        null = True,
+        blank = True,
+        db_index = True,
+        max_length = 250
+    )
+
+    total_cost = models.DecimalField(
+        decimal_places = 2,
+        max_digits = 10,
+        db_index = True,
+        default = 0.00,
+    )
+
+    gst = models.DecimalField(
         decimal_places = 2,
         max_digits = 10,
         db_index = True,
@@ -230,11 +250,47 @@ class TravelMode(models.Model):
 
     class Meta:
         index_together = [
-            ['user', 'travel_mode', 'distance', 'cost'],
-            ['tour', 'travel_mode', 'distance', 'cost'],
-            ['user', 'tour', 'travel_mode', 'distance', 'cost']
+            ['user', 'travel_mode', 'distance', 'total_cost', 'gst'],
+            ['tour', 'travel_mode', 'distance', 'total_cost', 'gst'],
+            ['user', 'tour', 'travel_mode', 'distance', 'total_cost', 'gst']
         ]
 
+# Travel Mode Class Type
+class TravelModeCost(models.Model):
+    
+    travel_mode = models.ForeignKey(
+        TravelMode,
+        on_delete = models.SET_NULL,
+        db_index = True,
+        null = True,
+        blank = True
+    ) 
+
+    travel_class_type =  models.CharField(
+        null = True,
+        blank = True,
+        db_index = True,
+        max_length = 1
+    )
+
+    cost_per_adult = models.DecimalField(
+        decimal_places = 2,
+        max_digits = 10,
+        db_index = True,
+        default = 0.00,
+    )
+
+    cost_per_child = models.DecimalField(
+        decimal_places = 2,
+        max_digits = 10,
+        db_index = True,
+        default = 0.00,
+    )
+
+    class Meta:
+        index_together = [
+            'travel_mode', 'travel_class_type', 'cost_per_adult', 'cost_per_child'
+        ]
 
 # Extended Tour
 class ExtendedTour(models.Model):
@@ -379,31 +435,6 @@ def vaistops_pre_save(sender, instance, **kwargs):
 # Stops
 class StopsData(models.Model):
 
-    HALT_CHOICES = (
-        ("1", "TEA/MEALS/DRINKS"),
-        ("2", "WASHROOM"),
-        ("3", "GAS REFILL"),
-        ("4", "TOLL"),
-        ("5", "STAY"),
-        ("6", "BREAK"),
-        ("7", "LAYOVER/CHANGE STOPS"),
-        ("8", "SIGHTSEEING/LEISURE"),
-        ("9", "NURSING"),
-        ("9", "HOSPITAL")
-    )
-
-    HALT_AT = (
-        ("1", "ROADSIDE"),
-        ("2", "TOLL BOOTH"),
-        ("3", "GAS STATION"),
-        ("4", "MALL"),
-        ("5", "HOTEL"),
-        ("6", "SIGHTSEEING/LEISURE"),
-        ("7", "AIRPORT"),
-        ("8", "TRAIN STATION"),
-        ("9", "BUS STOP")
-    )
-
     user = models.ForeignKey(
         User,
         on_delete = models.SET_NULL,
@@ -453,14 +484,14 @@ class StopsData(models.Model):
         max_length = 1,
         default = 1,
         db_index = True,
-        choices = HALT_CHOICES
+        choices = cs.HALT_CHOICES
     )
 
     halt_at = models.CharField(
         max_length = 1,
         default = 1,
         db_index = True,
-        choices = HALT_CHOICES
+        choices = cs.HALT_CHOICES
     )
     
     halt_name = models.CharField(
@@ -685,31 +716,9 @@ class StayData(models.Model):
         db_index = True,
     )
 
-    ROOM_TYPE = (
-        ("1", "SINGLE ROOM"),
-        ("2", "DOUBLE ROOM"),
-        ("3", "TRIPLE ROOM"),
-        ("4", "DELUX DOUBLE ROOM"),
-        ("5", "DELUX DOUBLE ROOM"),
-        ("6", "PREMIUM DOUBLE ROOM"),
-        ("7", "PREMIUM TRIPLE ROOM"),
-        ("8", "HOSTEL/DOMITORY"),
-        ("9", "COTTAGE"),
-        ("10", "PREMIUM TRIPLE ROOM"),
-        ("11", "LUXURY DOUBLE ROOM"),
-        ("12", "SUITE"),
-        ("13", "VILLA"),
-        ("14", "TENT"),
-        ("15", "HOUSEBOAT DELUXE"),
-        ("16", "HOUSEBOAT PREMIUM"),
-        ("18", "HOUSEBOAT LUXURY"),
-        ("19", "PRESIDENTIAL SUITE"),
-        ("20", "HOMESTAY"),
-    )
-
     room_type = models.CharField(
         default = "1",
-        choices = ROOM_TYPE,
+        choices = cs.ROOM_TYPE,
         db_index = True,
         null = False,
         blank = False,
@@ -984,16 +993,6 @@ def tolldata_pre_save(sender, instance, **kwargs):
 # Meals data
 class MealsData(models.Model):
 
-    MEALS_CHOICES = (
-        ("1", "TEA"),
-        ("2", "BREAKFAST"),
-        ("3", "BRUNCH"),
-        ("4", "LUNCH"),
-        ("5", "SNACKS"),
-        ("6", "DINNER"),
-        ("7", "DRINKS")
-    )
-
     user = models.ForeignKey(
         User,
         on_delete = models.SET_NULL,
@@ -1011,7 +1010,7 @@ class MealsData(models.Model):
 
     meal_type = models.CharField( 
         max_length = 1, 
-        choices = MEALS_CHOICES, 
+        choices = cs.MEALS_CHOICES, 
         default = '1',
         db_index = True
     ) 

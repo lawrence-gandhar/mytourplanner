@@ -9,11 +9,15 @@ from app.models import (
 )
 
 def get_tourdata(id=None):
-    try:
-        result = TourData.objects.get(pk=id)
-        return result
-    except:
-        return None
+    result = TourData.objects.prefetch_related('travelmode_set').get(pk=id)
+    print(result)
+    return result
+    # try:
+    #     result = TourData.objects.prefetch_related('tourdata__travelmode').get(pk=id)
+    #     print(result.query)
+    #     return result
+    # except:
+    #     return None
 
 def fetch_tourdata(user_id, limit=None, page=None, **kwargs):
     result = TourData.objects.filter(

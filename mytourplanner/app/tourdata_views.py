@@ -14,10 +14,14 @@ from app.forms.tour_forms import (
     TourDataUpdateForm
 )
 
+from app.forms.travelmode_forms import TravelModeCreateForm, TravelModeCostCreateForm
+
 from app.modules.tour_counters import TourCounters as tc
-from app.modules import db_operations as dbops 
+from app.modules import db_operations as dbops
+from app.modules import custom_constants as cs 
 
 from datetime import datetime
+import json
 
 
 # =====================================================
@@ -67,13 +71,13 @@ class TourNextStep(LoginRequiredMixin, View):
         if ins:
             self._data.update({
                 "tour_next_form":TourNextForm(instance=ins, prefix="tourdata"), 
-                "ins": ins
+                "ins": ins,
+                "travel_class_type": json.dumps(cs.TRAVELMODE_CLASS_TYPE),
+                "travel_mode_form": TravelModeCreateForm(prefix="travel_mode"),
+                "travel_cost_form": TravelModeCostCreateForm(prefix="travel_cost")
             })
-
-            print(self._data)
         else:
             return redirect("home")
-
         return render(request, "tour_next_step.html", self._data)
 
 
