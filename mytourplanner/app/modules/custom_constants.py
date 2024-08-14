@@ -4,18 +4,19 @@ TRAVELMODE_CHOICES = (
     ('3', 'BUS'),
     ('4', 'CAR'),
     ('5', 'BIKE'),
-    ('6', 'RENTAL/WALK'),
-)
-
-TRAVELMODE_CHOICES = (
-    ('1', 'FLIGHT'),
-    ('2', 'TRAIN'),
-    ('3', 'BUS'),
-    ('4', 'CAR'),
-    ('5', 'BIKE'),
     ('6', 'CYCLE'),
     ('7', 'RENTAL/WALK'),
 )
+
+TRAVELMODE_CHOICES_DICT = {
+    "1", "FLIGHT",
+    "2", "TRAIN",
+    "3", "BUS",
+    "4", "CAR",
+    "5", "BIKE",
+    "6", "CYCLE",
+    "7", "RENTAL/WALK",
+}
 
 TRAVELMODE_CLASS_TYPE = {
     "1": {

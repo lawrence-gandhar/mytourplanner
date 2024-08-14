@@ -77,7 +77,8 @@ def home(request):
             "tour_plan_form": TourDataInitialForm(),
             "completed_tours": dbops.fetch_completed_tours(queryset=queryset),
             "upcoming_tours": upcoming_tours,
-            "unfinished_tours": unfinished_tours
+            "unfinished_tours": unfinished_tours,
+            "current_date": today.strftime("%d %B, %Y")
         }
             
         return render(request, "home.html", context)

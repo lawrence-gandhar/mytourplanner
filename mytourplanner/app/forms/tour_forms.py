@@ -30,11 +30,11 @@ class TourNextForm(forms.ModelForm):
     class Meta:
         model = TourData
         fields = [
-            "travel_start_date", "travel_end_date", "budget"  
+            "travel_start_date", "budget"  
         ]
         widgets = {
-            "travel_start_date": forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
-            "travel_end_date": forms.DateInput(attrs={'class':'form-control', 'type':'date'}),
+            "travel_start_date": forms.DateInput(attrs={'class':'form-control', 'type':'date', 'required':True}),
+            "budget": forms.NumberInput(attrs={'class':'form-control', 'type':'number', 'required':True}),
         }
 
 

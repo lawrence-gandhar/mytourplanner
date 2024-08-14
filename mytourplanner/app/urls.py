@@ -1,5 +1,6 @@
 import app.views as app_view
 import app.tourdata_views as tour_view
+import app.travelmode_view as travel_mode
 from django.urls import path
 
 # Home Views 
@@ -16,6 +17,8 @@ urlpatterns +=[
 # CRUD TourData
 urlpatterns += [ 
     path("add_tour/", tour_view.add_tour, name="add_tour"),
-    path("tour_next_step/<int:id>/", tour_view.TourNextStep.as_view(), name="tour_next_step"),
+    path("tour_next_step/<int:id>/", tour_view.tour_next_step, name="tour_next_step"),
+    path("add_update_travel_date/<int:id>/", tour_view.add_update_travel_date, name="add_update_travel_date"),
+    path("add_travel_mode_cost/<int:id>/", travel_mode.add_travel_mode_cost, name="add_travel_mode_cost"),
     path("update_tour/", tour_view.update_tour, name="update_tour"),
 ]

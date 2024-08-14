@@ -180,6 +180,13 @@ class TravelMode(models.Model):
         db_index = True,
         on_delete = models.SET_NULL,
         null = True,
+        blank = True,
+        related_name = "tour_data"
+    )
+
+    travel_date = models.DateField(
+        db_index = True,
+        null = True,
         blank = True
     )
 
@@ -190,6 +197,13 @@ class TravelMode(models.Model):
         choices = cs.TRAVELMODE_CHOICES,
         null = False,
         blank = False
+    )
+
+    travel_class_type =  models.CharField(
+        null = True,
+        blank = True,
+        db_index = True,
+        max_length = 1
     )
 
     source = models.CharField(
@@ -241,6 +255,13 @@ class TravelMode(models.Model):
         default = 0.00,
     )
 
+    discount = models.DecimalField(
+        decimal_places = 2,
+        max_digits = 10,
+        db_index = True,
+        default = 0.00,
+    )
+
     gst = models.DecimalField(
         decimal_places = 2,
         max_digits = 10,
@@ -250,9 +271,9 @@ class TravelMode(models.Model):
 
     class Meta:
         index_together = [
-            ['user', 'travel_mode', 'distance', 'total_cost', 'gst'],
-            ['tour', 'travel_mode', 'distance', 'total_cost', 'gst'],
-            ['user', 'tour', 'travel_mode', 'distance', 'total_cost', 'gst']
+            ['user', 'travel_mode', 'distance', 'total_cost', 'gst', 'discount'],
+            ['tour', 'travel_mode', 'distance', 'total_cost', 'gst', 'discount'],
+            ['user', 'tour', 'travel_mode', 'distance', 'total_cost', 'gst', 'discount']
         ]
 
 # Travel Mode Class Type
@@ -265,13 +286,6 @@ class TravelModeCost(models.Model):
         null = True,
         blank = True
     ) 
-
-    travel_class_type =  models.CharField(
-        null = True,
-        blank = True,
-        db_index = True,
-        max_length = 1
-    )
 
     cost_per_adult = models.DecimalField(
         decimal_places = 2,
@@ -289,7 +303,7 @@ class TravelModeCost(models.Model):
 
     class Meta:
         index_together = [
-            'travel_mode', 'travel_class_type', 'cost_per_adult', 'cost_per_child'
+            'travel_mode', 'cost_per_adult', 'cost_per_child'
         ]
 
 # Extended Tour

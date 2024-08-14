@@ -12,10 +12,21 @@ class TravelModeCreateForm(forms.ModelForm):
     class Meta:
         model = TravelMode
         fields = [
-            'travel_mode', 'source', 'destination', 'distance', 'no_of_adults', 'no_of_children', 'total_cost', 'gst'
+            'travel_mode', 'source', 'destination', 'travel_date', 'distance', 'no_of_adults', 
+            'no_of_children', 'total_cost', 'gst', 'vendor', 'discount', 'travel_class_type'
         ]
         widgets = {
-            "travel_mode": forms.Select(attrs={'class':'form-control'}, choices=cs.TRAVELMODE_CHOICES),
+            "source": forms.TextInput(attrs={'required':True}),
+            "destination": forms.TextInput(attrs={'required':True}),
+            "distance": forms.NumberInput(attrs={'required':True}),
+            "travel_mode": forms.Select(choices=cs.TRAVELMODE_CHOICES),
+            "travel_date": forms.DateInput(attrs={'type':'date', 'required':True}),
+            "no_of_children": forms.NumberInput(attrs={'onfocusout':'get_total_amount()'}),
+            "no_of_adults": forms.NumberInput(attrs={'onfocusout':'get_total_amount()'}),
+            "gst": forms.NumberInput(attrs={'onfocusout':'get_total_amount()'}),
+            "total_cost": forms.NumberInput(attrs={'readonly':True}),
+            "discount": forms.NumberInput(attrs={'onfocusout':'get_total_amount()'}),
+            "travel_class_type": forms.Select(attrs={'class':'form-control'}),
         }
 
 
@@ -28,9 +39,10 @@ class TravelModeCostCreateForm(forms.ModelForm):
     class Meta:
         model = TravelModeCost
         fields = [
-            'cost_per_adult', 'cost_per_child', 'travel_class_type'
+            'cost_per_adult', 'cost_per_child', 
         ]
         widgets = {
-            "travel_class_type": forms.Select(attrs={'class':'form-control'}),
+            "cost_per_adult": forms.NumberInput(attrs={'onfocusout':'get_total_amount()'}),
+            "cost_per_child": forms.NumberInput(attrs={'onfocusout':'get_total_amount()'}),
         }
 

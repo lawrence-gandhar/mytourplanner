@@ -5,6 +5,7 @@ from django.forms.models import model_to_dict
 from django.contrib import messages
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 
 from app.models import TourData
 
@@ -37,6 +38,7 @@ def check_planned_date(request):
         query = TourData.objects.filter(plan_to_start_on=planned_date).count()
         return HttpResponse(query)
 
+
 # =====================================================
 # Add TourData
 # =====================================================
@@ -58,41 +60,58 @@ def add_tour(request):
     else:
         return HttpResponseNotFound("Method Not Allowed")
 
+
 # =====================================================
-# Next Steps for TourData
+# View for TourData Next Steps
 # =====================================================
-class TourNextStep(LoginRequiredMixin, View):
+@login_required(login_url="login")
+def tour_next_step(request, id):
+    data = {}
 
-    def get(self, request, id):
-        self._user_id = request.session["user_id"]
-        self._data = {}
-
-        ins = dbops.get_tourdata(id)
-        if ins:
-            self._data.update({
-                "tour_next_form":TourNextForm(instance=ins, prefix="tourdata"), 
-                "ins": ins,
-                "travel_class_type": json.dumps(cs.TRAVELMODE_CLASS_TYPE),
-                "travel_mode_form": TravelModeCreateForm(prefix="travel_mode"),
-                "travel_cost_form": TravelModeCostCreateForm(prefix="travel_cost")
-            })
-        else:
-            return redirect("home")
-        return render(request, "tour_next_step.html", self._data)
-
-
-    def post(self, request):
-        self._user_id = request.session["user_id"]
-
-        return HttpResponse(1)
+    ins = dbops.get_tourdata(id)
+    print(ins)
+    if ins:
+        data.update({
+            "tour_next_form":TourNextForm(instance=ins, prefix="tourdata"), 
+            "ins": ins,
+            "travel_class_type": json.dumps(cs.TRAVELMODE_CLASS_TYPE),
+            "travel_mode_form": TravelModeCreateForm(prefix="travel_mode"),
+            "travel_cost_form": TravelModeCostCreateForm(prefix="travel_cost")
+        })
+    # else:
+    #     return redirect("home")
+    return render(request, "tour_next_step.html", data)
 
 
+# =====================================================
+# Add/Update for TourData Next Steps
+# =====================================================
+@login_required(login_url="login")
+def add_update_travel_date(request, id):
+    user = request.session["user_id"]
+    
+    ins = dbops.get_tourdata(id)
+    if ins:
+        tour_next_form = TourNextForm(request.POST, prefix="tourdata")
+
+        if tour_next_form.is_valid():
+            travel_start_date = tour_next_form.cleaned_data["travel_start_date"]
+            budget = tour_next_form.cleaned_data["budget"]
+
+            ins.travel_start_date = travel_start_date
+            ins.budget = budget
+            ins.save()
+    else:
+        messages.ERROR(request, "Invalid operation performed.")
+        return redirect("home")
+    return redirect("tour_next_step", id)
+        
+        
 # =====================================================
 # Update TourData
 # =====================================================
 @login_required(login_url="login")
 def update_tour(request):
     ins = TourData.objects.get(pk=request.GET["id"]).values_list()
-    print(ins)
     return JsonResponse(ins, safe=False)
 

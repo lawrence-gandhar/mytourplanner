@@ -26,4 +26,4 @@ class TourCounters:
             (df["travel_end_date"].isnull() == False)
         ])
 
-        print(planned_tours, travelled_tours)
+        # print(planned_tours, travelled_tours)

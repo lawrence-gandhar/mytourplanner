@@ -63,6 +63,16 @@
                                     {{ins.created_on|date:"d b, Y"|upper}}
                                 </th>
                             </tr>
+                            <tr>
+                                <th class="left-align td-orange-bg">Travel Start Date</th>
+                                <th class="left-align white-bg width-30">
+                                    {{ins.travel_start_date|date:"d b, Y"|upper}}
+                                </th>
+                                <th class="left-align td-orange-bg">Travel End Date</th>
+                                <th class="left-align white-bg width-30">
+                                    {{ins.travel_end_date|date:"d b, Y"|upper}}
+                                </th>
+                            </tr>
                         </table>
                     </div>
                 </div>
@@ -81,18 +91,18 @@
                         <nav>
                             <div class="nav nav-underline tab-menu" id="nav-tab" role="tablist">
                                 <a class="nav-link active" style="text-decoration:none; color:#000000;" id="step_1" data-bs-toggle="tab" 
-                                    data-bs-target="#nav-step-1" type="button" role="tab" 
-                                    aria-controls="nav-step-1" aria-selected="true" href="#">
+                                    type="button" role="tab" aria-controls="nav-step-1" 
+                                    aria-selected="true" href="#nav-step-1">
                                     Travel Start Date & Budget
                                 </a>
                                 <a class="nav-link" style="text-decoration:none; color:#000000;" id="step_2" data-bs-toggle="tab" 
-                                    data-bs-target="#nav-step-2" type="button" role="tab" 
-                                    aria-controls="nav-step-2" aria-selected="false" href="#">
+                                    type="button" role="tab" 
+                                    aria-controls="nav-step-2" aria-selected="false" href="#nav-step-2">
                                     Travel Modes
                                 </a>
                                 <a class="nav-link" style="text-decoration:none; color:#000000;" id="step_3" data-bs-toggle="tab" 
-                                    data-bs-target="#nav-step-3" type="button" role="tab" 
-                                    aria-controls="nav-step-3" aria-selected="false" href="#">
+                                    type="button" role="tab" 
+                                    aria-controls="nav-step-3" aria-selected="false" href="#nav-step-3">
                                     Via Stops
                                 </a>
                             </div>
@@ -100,7 +110,7 @@
                         <div class="tab-content" id="nav-tabContent">
                             <div class="tab-pane fade show active" id="nav-step-1" role="tabpanel" aria-labelledby="step_2" tabindex="0">
                                 <div class="container-fluid">
-                                    <form id="tourCreateForm" action="{% url 'tour_next_step' ins.id %}" method="post" class="form">
+                                    <form id="tourCreateForm" action="{% url 'add_update_travel_date' ins.id %}" method="post" class="form">
                                         {% csrf_token %}
                                         <input type="hidden" name="id">
                                         <div class="row" style="margin-top:10px;">
@@ -112,6 +122,19 @@
                                                 <label for="id_tourdata-budget" class="form-label">Budget</label>
                                                 {{ tour_next_form.budget|safe }}
                                             </div>
+
+                                            <div class="row" style="margin-top:5px; margin-bottom:10px;">
+                                                <div class="col-md-12">
+                                                    <button class="btn btn-sm btn-success" type="submit" style="float:right;">
+                                                        Submit
+                                                    </button>
+                                                    <button class="btn btn-sm btn-primary" type="button" 
+                                                    style="float:right; margin-right: 5px;" onclick="go_to_next_tab('#nav-step-2')">
+                                                        Skip
+                                                    </button>
+                                                </div>
+                                            </div>
+
                                             {% include 'alert_messages.html' %}
                                         </div>
                                     </form>
@@ -134,8 +157,9 @@
                                                 <th class="left-align td-orange-bg">Total Amount</th>
                                                 <th class="left-align td-orange-bg">Action</th>
                                             </tr>
+                                            {% for row in ins.travelmode.all %}
                                             <tr>
-                                                <td class="left-align">Source</td>
+                                                <td class="left-align">{{row.travel_mode}}</td>
                                                 <td class="left-align">Destination</td>
                                                 <td class="left-align">Mode Of Travel</td>
                                                 <td class="left-align">Travel Class Type</td>
@@ -150,6 +174,7 @@
                                                     <i class="fas fa-trash" title="Delete Record" style="cursor:pointer; color:#ff0000; margin-left:10px;"></i>
                                                 </td>
                                             </tr>
+                                            {% endfor %}
                                         </table>
                                     </div>
 
@@ -181,10 +206,14 @@
                                     </div>
                                     
 
-                                    <div class="row" style="margin-top:5px; margin-bottom:20px;">
+                                    <div class="row" style="margin-top:5px; margin-bottom:10px;">
                                         <div class="col-md-12">
                                             <button class="btn btn-sm btn-success" onclick="openAddTravelMode()" type="button" style="float:right;">
                                                 Add Travel Mode
+                                            </button>
+                                            <button class="btn btn-sm btn-primary" type="button" 
+                                                style="float:right; margin-right: 5px;" onclick="go_to_next_tab('#nav-step-3')">
+                                                Skip
                                             </button>
                                         </div>
                                     </div>
@@ -199,7 +228,10 @@
                                                     All the fields can be changed based on your requirements. `Source`, `Destination`, 
                                                     `No. of Adults` and `No.of Children` can be changed as per the travel mode.
                                                 </div>
-                                                <form style="margin-bottom:0px;" id="travelmodeCreateForm" action="{% url 'tour_next_step' ins.id %}" method="post" class="form">
+
+                                                <div id="error-msgs" class="alert alert-danger" style="display:none;padding: 5px;"></div>
+
+                                                <form style="margin-bottom:0px;" id="travelmodeCreateForm" action="{% url 'add_travel_mode_cost' ins.id %}" method="post" class="form">
                                                     {% csrf_token %}
                                                     <input type="hidden" name="id">
                                                     <div class="row" style="margin-top:10px;">
@@ -216,12 +248,24 @@
                                                             id="id_travel_mode-destination" value="{{ ins.destination }}">
                                                         </div>
                                                         <div class="col-md-3 col-sm-4">
+                                                            <label for="id_travel_mode-travel_mode" class="form-label">Date of Travel</label>
+                                                            {{ travel_mode_form.travel_date|safe }}
+                                                        </div>
+                                                        <div class="col-md-3 col-sm-4">
                                                             <label for="id_travel_mode-travel_mode" class="form-label">Mode of Travel</label>
                                                             {{ travel_mode_form.travel_mode|safe }}
                                                         </div>
                                                         <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_cost-travel_class_type" class="form-label">Travel Class Type</label>
-                                                            {{ travel_cost_form.travel_class_type|safe }}
+                                                            <label for="id_travel_mode-travel_class_type" class="form-label">Travel Class Type</label>
+                                                            {{ travel_mode_form.travel_class_type|safe }}
+                                                        </div>
+                                                        <div class="col-md-3 col-sm-4">
+                                                            <label for="id_travel_mode-distance" class="form-label">Distance</label>
+                                                            {{ travel_mode_form.distance|safe }}
+                                                        </div>
+                                                        <div class="col-md-3 col-sm-4">
+                                                            <label for="id_travel_mode-vendor" class="form-label">Company</label>
+                                                            {{ travel_mode_form.vendor|safe }}
                                                         </div>
                                                         <div class="col-md-3 col-sm-4">
                                                             <label for="id_travel_mode-no_of_adults" class="form-label">No. Of Adults</label>
@@ -239,17 +283,36 @@
                                                             <label for="id_travel_cost-cost_per_child" class="form-label">Cost Per Child</label>
                                                             {{ travel_cost_form.cost_per_child|safe }}
                                                         </div>
+                                                        
                                                         <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_mode-distance" class="form-label">Distance</label>
-                                                            {{ travel_mode_form.distance|safe }}
+                                                            <label for="id_travel_mode-gst" class="form-label">Total GST Amount</label>
+                                                            {{ travel_mode_form.gst|safe }}
+                                                        </div>
+                                                        <div class="col-md-3 col-sm-4">
+                                                            <label for="id_travel_mode-discount_type" class="form-label">Discount Type</label>
+                                                            <select id="id_travel_mode-discount_type" class="form-control form_fields" onchange="get_total_amount()">
+                                                                <option value="0">Percent</option>
+                                                                <option value="1">Cash</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-3 col-sm-4">
+                                                            <label for="id_travel_mode-discount" class="form-label">Total Discount</label>
+                                                            {{ travel_mode_form.discount|safe }}
                                                         </div>
                                                         <div class="col-md-3 col-sm-4">
                                                             <label for="id_travel_mode-total_cost" class="form-label">Total Amount</label>
                                                             {{ travel_mode_form.total_cost|safe }}
                                                         </div>
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_mode-gst" class="form-label">GST Amount</label>
-                                                            {{ travel_mode_form.gst|safe }}
+                                                    </div>
+                                                    <div class="row" style="margin-top:5px; margin-bottom:10px;">
+                                                        <div class="col-md-12">
+                                                            <button class="btn btn-sm btn-success" onclick="submit_travel_mode_cost_form()" type="button" style="float:right;">
+                                                                Submit
+                                                            </button>
+                                                            <button class="btn btn-sm btn-primary" type="button" 
+                                                                style="float:right; margin-right: 5px;" onclick="go_to_next_tab('#nav-step-3')">
+                                                                Skip
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </form>
@@ -273,17 +336,21 @@
     <script>
         $(document).ready(function(){
 
-            const travel_class_type = JSON.parse('{{travel_class_type|safe}}');
+            // Default Travel Class Type Setup 
+            // =========================================================
 
-            console.log(travel_class_type);
+            const travel_class_type = JSON.parse('{{travel_class_type|safe}}');
 
             html = "";
             $.each(travel_class_type["1"], function(key,value){
                 html += "<option value='"+key+"'>"+value+"</option>";
             });
 
-            $("#id_travel_cost-travel_class_type").empty().append(html);
+            $("#id_travel_mode-travel_class_type").empty().append(html);
 
+            // Travel Mode On Change 
+            // =========================================================
+            
             $('#id_travel_mode-travel_mode').on('change', function() {
                 html = "";
                 entry = travel_class_type[$(this).val()];
@@ -292,13 +359,150 @@
                     html += "<option value='"+key+"'>"+value+"</option>";
                 });
 
-                $("#id_travel_cost-travel_class_type").empty().append(html);
+                $("#id_travel_mode-travel_class_type").empty().append(html);
             });
-
         });
 
+        // Travel Mode & Cost Creation
+        // =========================================================
+
+        function submit_travel_mode_cost_form(){
+            passed_test = new Array();
+            passed_test.push(validate_distance()); 
+            passed_test.push(validate_no_of_adults()); 
+            passed_test.push(validate_no_of_children()); 
+            passed_test.push(validate_cost_per_adult());
+            passed_test.push(validate_cost_per_child());
+            passed_test.push(validate_gst());
+            passed_test.push(validate_adult_children());
+            passed_test.push(validate_discount());
+            console.log(passed_test);
+
+            error_msgs = {
+                0: "Distance cannot be less than or equal to 0",
+                1: "No.of Adults cannot be less than 0",
+                2: "No.of Children cannot be less than 0",
+                3: "Cost Per Adults cannot be less than 0",
+                4: "Cost Per Child cannot be less than 0",
+                5: "GST cannot be less than 0",
+                6: "Both No. Of Adults and No. Of Children cannot be equal to 0",
+                7: "Discount cannot be less than 0",
+            }
+
+            html = "";
+            total_test_passed = 0;
+            for(i=0; i<passed_test.length; i++){
+                if (passed_test[i] == 0){
+                    html += '<p style="padding: 0px;margin: 0px; font-size:80%;">'+error_msgs[i]+'</p>'
+                }else{
+                    total_test_passed += passed_test[i];
+                }
+            }
+
+            console.log(total_test_passed)
+
+            if (total_test_passed == 8){
+                $("#error-msgs").empty().append(html).css("display", "none");
+                $("#travelmodeCreateForm").submit();
+            }else{
+                $("#error-msgs").empty().append(html).css("display", "block");
+            }
+        }
+
+        function validate_distance(){
+            distance = parseFloat($("#id_travel_mode-distance").val());
+
+            if (distance < 0){return 0;}
+            else{return 1;} 
+        }
+
+        function validate_no_of_adults(){
+            no_of_adults = parseInt($("#id_travel_mode-no_of_adults").val());
+
+            if (no_of_adults < 0){return 0}
+            else{return 1;} 
+        }
+
+        function validate_no_of_children(){
+            no_of_children = parseInt($("#id_travel_mode-no_of_children").val());
+
+            if (no_of_children < 0){return 0;}
+            else{return 1;} 
+        }
+
+        function validate_cost_per_adult(){
+            cost_per_adult = parseFloat($("#id_travel_cost-cost_per_adult").val());
+
+            if (cost_per_adult < 0){return 0;}
+            else{return 1;}
+        }
+
+        function validate_cost_per_child(){
+            cost_per_child = parseFloat($("#id_travel_cost-cost_per_child").val());
+
+            if (cost_per_child < 0){return 0;}
+            else{return 1;}
+        }
+
+        function validate_gst(){
+            gst = parseFloat($("#id_travel_mode-gst").val());
+
+            if (gst < 0){return 0;}
+            else{return 1;}
+        }
+
+        function validate_adult_children(){
+            no_of_adults = parseInt($("#id_travel_mode-no_of_adults").val());
+            no_of_children = parseInt($("#id_travel_mode-no_of_children").val());
+
+            if (no_of_adults == 0 && no_of_children == 0){return 0;}
+            else{return 1;}
+        }
+
+        function validate_discount(){
+            discount = parseFloat($("#id_travel_mode-discount").val());
+
+            if (discount < 0){return 0;}
+            else{return 1;}
+        }
+
+
+
+
+        // Total Cost Calculation
+        // =========================================================
+        function get_total_amount(){
+            no_of_adults = parseInt($("#id_travel_mode-no_of_adults").val());
+            cost_per_adult = parseFloat($("#id_travel_cost-cost_per_adult").val());
+            no_of_children = parseInt($("#id_travel_mode-no_of_children").val());
+            cost_per_child = parseFloat($("#id_travel_cost-cost_per_child").val());
+            gst = parseFloat($("#id_travel_mode-gst").val());
+            discount = parseFloat($("#id_travel_mode-discount").val());
+
+            cost = (no_of_adults * cost_per_adult) + (no_of_children * cost_per_child)
+            total_amount = gst + cost
+
+            if ($("#id_travel_mode-discount_type").val() == 0){
+                total_amount = total_amount - (total_amount * (discount/100));
+            }
+
+            if ($("#id_travel_mode-discount_type").val() == 1){
+                total_amount = total_amount - discount;
+            }
+
+            $("#id_travel_mode-total_cost").val(total_amount);
+        }
+
+        // Display Travel Mode Form
+        // =========================================================
         function openAddTravelMode(){
             $("#add_travel_form_div").css("display","block");
+        }
+
+        // Open Tabs on Skip Button Click
+        // =========================================================
+        function go_to_next_tab(elem){
+            $('#nav-tab a[href="'+elem+'"]').tab('show');
         }
 
     </script>

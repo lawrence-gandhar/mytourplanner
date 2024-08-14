@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from django.db.models import F
+
 from app.models import (
     TourData,
     TollData,
@@ -9,15 +11,11 @@ from app.models import (
 )
 
 def get_tourdata(id=None):
-    result = TourData.objects.prefetch_related('travelmode_set').get(pk=id)
-    print(result)
-    return result
-    # try:
-    #     result = TourData.objects.prefetch_related('tourdata__travelmode').get(pk=id)
-    #     print(result.query)
-    #     return result
-    # except:
-    #     return None
+    try:
+        result = TourData.objects.prefetch_related('tour_data').get(pk=id)
+        return result
+    except:
+        return None
 
 def fetch_tourdata(user_id, limit=None, page=None, **kwargs):
     result = TourData.objects.filter(
@@ -42,6 +40,19 @@ def fetch_completed_tours(queryset=None):
         ).values(
             'id', 'created_on', 'plan_to_start_on', 'travel_start_date', 
             'travel_end_date', 'source', 'destination'
+        )
+    return result
+
+
+def fetch_calendar_data(queryset=None, start_date=None, end_date=None):
+    result = queryset.select_related("tour_data").filter(
+            created_on__gte =  start_date,
+            created_on__lte = end_date
+        ).values(
+            'id', 'created_on', 'plan_to_start_on', 'travel_start_date', 'travel_end_date', 'source', 'destination', 
+            'planned_no_days', 'tour_data__travel_mode', 'tour_data__travel_class_type', 
+            'tour_data__no_of_adults', 'tour_data__no_of_children',travel_source=F('tour_data__source'), 
+            travel_destination=F('tour_data__destination')
         )
     return result
 
