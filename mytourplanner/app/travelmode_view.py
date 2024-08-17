@@ -19,25 +19,17 @@ def add_travel_mode_cost(request, id):
         travel_mode_ins = travel_mode_form.save(commit=False)
         travel_mode_ins.tour_id = int(id)
         travel_mode_ins.user_id = user_id
+        travel_mode_ins.save()
     else:
-        print("travel_mode_form failed")
-        messages.ERROR(request, f"Form submission failed. {travel_mode_form.errors}")
-        print(travel_mode_form.errors)
+        messages.error(request, f"Form submission failed. {travel_mode_form.errors}")
         return redirect("tour_next_step", id)
         
     if travel_cost_form.is_valid():
         travel_cost_ins = travel_cost_form.save(commit=False)
         travel_cost_ins.travel_mode_id = travel_mode_ins.id
-
-        try:
-            added = travel_cost_ins.save()
-            if added:
-                travel_mode_ins.save()
-                messages.SUCCESS(request, "Form submitted successfully")  
-        except Exception as e:
-            print(e)
-            messages.ERROR(request, f"Form submission failed. {e}")
+        travel_cost_ins.save()
+        messages.success(request, "Form submission is successful")
     else:
-        print(travel_cost_form.errors)
-        messages.ERROR(request, f"Form submission failed. {travel_cost_form.errors}")
+        travel_mode_ins.delete()
+        messages.error(request, f"Form submission failed. {travel_cost_form.errors}")
     return redirect("tour_next_step", id)

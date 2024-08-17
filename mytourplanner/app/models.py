@@ -203,7 +203,7 @@ class TravelMode(models.Model):
         null = True,
         blank = True,
         db_index = True,
-        max_length = 1
+        max_length = 3
     )
 
     source = models.CharField(
@@ -284,7 +284,8 @@ class TravelModeCost(models.Model):
         on_delete = models.SET_NULL,
         db_index = True,
         null = True,
-        blank = True
+        blank = True,
+        related_name="travelmode_cost"
     ) 
 
     cost_per_adult = models.DecimalField(
@@ -505,7 +506,7 @@ class StopsData(models.Model):
         max_length = 1,
         default = 1,
         db_index = True,
-        choices = cs.HALT_CHOICES
+        choices = cs.HALT_AT
     )
     
     halt_name = models.CharField(

@@ -4,6 +4,8 @@ from django.db.models import F
 
 from app.models import (
     TourData,
+    TravelMode,
+    TravelModeCost,
     TollData,
     ViaStops,
     StayData,
@@ -12,10 +14,11 @@ from app.models import (
 
 def get_tourdata(id=None):
     try:
-        result = TourData.objects.prefetch_related('tour_data').get(pk=id)
+        result = TourData.objects.get(pk=id)
         return result
     except:
         return None
+    
 
 def fetch_tourdata(user_id, limit=None, page=None, **kwargs):
     result = TourData.objects.filter(
@@ -68,3 +71,33 @@ def fetch_tour_counters(user_id=None):
     return result
 
 
+def fetch_travelmode_data(travel_mode_id=None, tour_data_id=None):
+    
+    queryset = TravelMode.objects.prefetch_related('travelmode_cost').all()
+
+    if tour_data_id:
+        queryset = queryset.filter(
+            tour_id = int(tour_data_id)
+        ).values(
+            'travel_date', 'travel_mode', 'travel_class_type', 
+            'source', 'destination', 'distance', 'no_of_adults',
+            'no_of_children', 'vendor', 'total_cost', 'discount',
+            'gst', 'travelmode_cost__cost_per_adult',
+            'travelmode_cost__cost_per_child'
+        ) 
+    
+    if travel_mode_id:
+        queryset = queryset.filter(
+            tour_id = int(travel_mode_id)
+        ).values(
+            'travel_date', 'travel_mode', 'travel_class_type', 
+            'source', 'destination', 'distance', 'no_of_adults',
+            'no_of_children', 'vendor', 'total_cost', 'discount',
+            'gst', 'travelmode_cost__cost_per_adult',
+            'travelmode_cost__cost_per_child'
+        )  
+
+    print(queryset.query)
+    return queryset
+
+    

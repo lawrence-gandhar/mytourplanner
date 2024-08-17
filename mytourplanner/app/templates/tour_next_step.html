@@ -1,5 +1,6 @@
 {% load static %}
 {% load custom_tags %}
+{% load choices_tags %}
 <html>
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -145,10 +146,11 @@
                                     <div class="col-md-12" style="margin-top:5px;">
                                         <table class="table table-bordered table-responsive" style="margin-top:10px; margin-bottom:10px;">
                                             <tr>
+                                                <th class="left-align td-orange-bg">Travel Date</th>
                                                 <th class="left-align td-orange-bg">Source</th>
                                                 <th class="left-align td-orange-bg">Destination</th>
                                                 <th class="left-align td-orange-bg">Mode Of Travel</th>
-                                                <th class="left-align td-orange-bg">Travel Class Type</th>
+                                                <th class="left-align td-orange-bg">Travel Class/Type</th>
                                                 <th class="left-align td-orange-bg">No. Of Adults</th>
                                                 <th class="left-align td-orange-bg">Cost Per Adult</th>
                                                 <th class="left-align td-orange-bg">No. Of Children</th>
@@ -157,18 +159,27 @@
                                                 <th class="left-align td-orange-bg">Total Amount</th>
                                                 <th class="left-align td-orange-bg">Action</th>
                                             </tr>
-                                            {% for row in ins.travelmode.all %}
+                                            {% for row in tour_data %}
                                             <tr>
-                                                <td class="left-align">{{row.travel_mode}}</td>
-                                                <td class="left-align">Destination</td>
-                                                <td class="left-align">Mode Of Travel</td>
-                                                <td class="left-align">Travel Class Type</td>
-                                                <td class="left-align">No. Of Adults</td>
-                                                <td class="left-align">Cost Per Adult</td>
-                                                <td class="left-align">No. Of Children</td>
-                                                <td class="left-align">Cost Per Child</td>
-                                                <td class="left-align">Distance</td>
-                                                <td class="left-align">Total Amount</td>
+                                                <td class="left-align">{{row.travel_date}}</td>
+                                                <td class="left-align">{{row.source}}</td>
+                                                <td class="left-align">{{row.destination}}</td>
+                                                <td class="left-align">
+                                                    {{row.travel_mode|travel_mode_choice}}
+                                                </td>
+                                                <td class="left-align">
+                                                    {{row.travel_class_type|travel_class_choice:row.travel_mode}}
+                                                </td>
+                                                <td class="left-align">{{row.no_of_adults}}</td>
+                                                <td class="left-align">
+                                                    {{row.travelmode_cost__cost_per_adult}}
+                                                </td>
+                                                <td class="left-align">{{row.no_of_children}}</td>
+                                                <td class="left-align">
+                                                    {{row.travelmode_cost__cost_per_child}}
+                                                </td>
+                                                <td class="left-align">{{row.distance}}</td>
+                                                <td class="left-align">{{row.total_cost}}</td>
                                                 <td style="text-align: center;">
                                                     <i class="fas fa-pencil" title="Edit Record" style="cursor:pointer;"></i>
                                                     <i class="fas fa-trash" title="Delete Record" style="cursor:pointer; color:#ff0000; margin-left:10px;"></i>
@@ -187,19 +198,23 @@
                                                 </tr>
                                                 <tr>
                                                     <td>Total Amount for Adults</td>
-                                                    <td class="right-align"></td>
+                                                    <td class="right-align">{{total_cost_adults}}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Total Amount for Children</td>
-                                                    <td class="right-align"></td>
+                                                    <td class="right-align">{{total_cost_children}}</td>
                                                 </tr>
                                                 <tr>
                                                     <td>Total GST Amount</td>
-                                                    <td class="right-align"></td>
+                                                    <td class="right-align">{{total_gst}}</td>
                                                 </tr>
                                                 <tr>
                                                     <th class="left-align">Total Expenditure on Travel</th>
-                                                    <th class="right-align bg-success">12000000</th>
+                                                    <th class="right-align bg-success">{{total_expenditure}}</th>
+                                                </tr>
+                                                <tr>
+                                                    <th class="left-align">Total Distance Travelled (KM)</th>
+                                                    <th class="right-align bg-success">{{total_distance}}</th>
                                                 </tr>
                                             </table>
                                         </div>
@@ -376,7 +391,6 @@
             passed_test.push(validate_gst());
             passed_test.push(validate_adult_children());
             passed_test.push(validate_discount());
-            console.log(passed_test);
 
             error_msgs = {
                 0: "Distance cannot be less than or equal to 0",
@@ -398,9 +412,6 @@
                     total_test_passed += passed_test[i];
                 }
             }
-
-            console.log(total_test_passed)
-
             if (total_test_passed == 8){
                 $("#error-msgs").empty().append(html).css("display", "none");
                 $("#travelmodeCreateForm").submit();

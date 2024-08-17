@@ -9,7 +9,7 @@ import html
 from django import template
 from django.conf import settings
 from django.utils import safestring
-import html
+
 from app.models import *
 
 # use Library

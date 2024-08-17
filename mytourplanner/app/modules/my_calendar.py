@@ -63,7 +63,10 @@ class GetCalendar:
         for record in self._tourdata:
 
             start_idx = int(record["plan_to_start_on"].strftime("%d"))
-            date_range = list(range(start_idx, (start_idx + record["planned_no_days"] + 1)))
+
+            date_range = [start_idx]
+            if record["planned_no_days"] > 1:
+                date_range = list(range(start_idx, (start_idx + record["planned_no_days"] + 1)))    
 
             self._planned_dates.update({
                 str(start_idx): {

@@ -69,17 +69,36 @@ def tour_next_step(request, id):
     data = {}
 
     ins = dbops.get_tourdata(id)
-    print(ins)
     if ins:
+
+        tour_data = dbops.fetch_travelmode_data(tour_data_id=int(id))
+
+        total_cost_adults = 0
+        total_cost_children = 0
+        total_gst = 0
+        total_distance = 0
+
+        for row in tour_data:
+            total_cost_adults += row["no_of_adults"] * row["travelmode_cost__cost_per_adult"]
+            total_cost_children += row["no_of_children"] * row["travelmode_cost__cost_per_child"]
+            total_gst += row["gst"] 
+            total_distance += row["distance"] 
+
+        total_expenditure = total_cost_adults + total_cost_children + total_gst
+
         data.update({
             "tour_next_form":TourNextForm(instance=ins, prefix="tourdata"), 
             "ins": ins,
+            "tour_data":tour_data,
+            "total_cost_adults": total_cost_adults,
+            "total_cost_children": total_cost_children,
+            "total_gst": total_gst,
+            "total_expenditure": total_expenditure,
+            "total_distance": total_distance,
             "travel_class_type": json.dumps(cs.TRAVELMODE_CLASS_TYPE),
             "travel_mode_form": TravelModeCreateForm(prefix="travel_mode"),
             "travel_cost_form": TravelModeCostCreateForm(prefix="travel_cost")
         })
-    # else:
-    #     return redirect("home")
     return render(request, "tour_next_step.html", data)
 
 
