@@ -49,10 +49,12 @@ class GetCalendar:
         )
 
         color = random.choice(color_code)
-
-        if color not in self._selected_colors:
-            self._selected_colors.append(color)
-            return color.upper()
+        if color is not None:
+            if color not in self._selected_colors:
+                self._selected_colors.append(color)
+                return color.upper()
+            else:
+                self._generate_color_code()
         else:
             self._generate_color_code()
 
@@ -66,7 +68,7 @@ class GetCalendar:
 
             date_range = [start_idx]
             if record["planned_no_days"] > 1:
-                date_range = list(range(start_idx, (start_idx + record["planned_no_days"] + 1)))    
+                date_range = list(range(start_idx, (start_idx + record["planned_no_days"])))    
 
             self._planned_dates.update({
                 str(start_idx): {
@@ -78,15 +80,14 @@ class GetCalendar:
                 }
             }) 
 
+            travel_mode_found = False
             if record["travel_start_date"]:
                 travel_start = int(record["travel_start_date"].strftime("%d"))
-                travel_mode = ""
-                travel_mode_found = False
                 if record["tour_data__travel_mode"]:
-                    travel_mode_found = True
                     travel_mode = f"""{cs.TRAVELMODE_CHOICES_DICT[record["tour_data__travel_mode"]]} from
                         {record["travel_source"].upper()} to {record["travel_destination"].upper()}""" 
-                
+                    travel_mode_found = True
+
                 self._travel_start.update({
                     str(travel_start): {
                         "planned_date": str(start_idx),
@@ -94,6 +95,9 @@ class GetCalendar:
                         "travel_mode_found": travel_mode_found
                     }
                 })
+
+            if travel_mode_found:
+                
 
     #============================================================
     # Fetch Queryset
@@ -154,11 +158,11 @@ class GetCalendar:
                 cell.append(new_tag)
 
             if travel_value["travel_mode_found"]:
-                title = f"Travelling From {travel_value["travel_mode"]}"
+                title = f"Travelling by {travel_value["travel_mode"]}"
                 cell = soup.find(id=travel_key)
                 new_tag = soup.new_tag("span", **{'class':'planned_tour', 'title':title})
                 new_tag["style"] = f"background-color:{self._planned_dates[travel_value["planned_date"]]["color"]}"
-                new_tag.string = f"Travelling From {travel_value["travel_mode"]}"
+                new_tag.string = f"Travelling by {travel_value["travel_mode"]}"
                 cell.append(new_tag)
 
         self._calendar_output = soup.prettify()

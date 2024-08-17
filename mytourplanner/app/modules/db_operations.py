@@ -73,7 +73,7 @@ def fetch_tour_counters(user_id=None):
 
 def fetch_travelmode_data(travel_mode_id=None, tour_data_id=None):
     
-    queryset = TravelMode.objects.prefetch_related('travelmode_cost').all()
+    queryset = TravelMode.objects.select_related('travelmode_cost').all()
 
     if tour_data_id:
         queryset = queryset.filter(
@@ -96,8 +96,6 @@ def fetch_travelmode_data(travel_mode_id=None, tour_data_id=None):
             'gst', 'travelmode_cost__cost_per_adult',
             'travelmode_cost__cost_per_child'
         )  
-
-    print(queryset.query)
     return queryset
 
     
