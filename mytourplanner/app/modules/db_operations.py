@@ -53,7 +53,8 @@ def fetch_calendar_data(queryset=None, start_date=None, end_date=None):
             created_on__lte = end_date
         ).values(
             'id', 'created_on', 'plan_to_start_on', 'travel_start_date', 'travel_end_date', 'source', 'destination', 
-            'planned_no_days', 'tour_data__travel_mode', 'tour_data__travel_class_type', 
+            'planned_no_days', 'tour_data__travel_mode', 'tour_data__travel_class_type', 'tour_data__travel_date',
+            'tour_data__source', 'tour_data__destination',
             'tour_data__no_of_adults', 'tour_data__no_of_children',travel_source=F('tour_data__source'), 
             travel_destination=F('tour_data__destination')
         )

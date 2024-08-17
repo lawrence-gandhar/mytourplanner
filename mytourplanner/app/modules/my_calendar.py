@@ -21,6 +21,7 @@ class GetCalendar:
         self._planned_index = {}
         self._selected_colors = []
         self._travel_start = {}
+        self._travel_mode_data = {}
         self._tourdata = self._get_calendar_data()
         self._planned_dates_formatter()
         
@@ -97,7 +98,20 @@ class GetCalendar:
                 })
 
             if travel_mode_found:
-                
+                travel_mode_date = int(record["tour_data__travel_date"].strftime("%d"))
+                travel_details = f"""
+                    Travelling from {record["tour_data__source"]} to {record["tour_data__destination"]}. 
+                    By {cs.TRAVELMODE_CHOICES_DICT[record["tour_data__travel_mode"]]}. 
+                """
+
+                if travel_mode_date not in self._travel_mode_data:
+                    self._travel_mode_data.update({travel_mode_date: {
+                        "travel_details":travel_details, 
+                        "color": self._planned_dates[str(start_idx)]["color"]
+                    }})
+                else:
+                    self._travel_mode_data[travel_mode_date]["travel_details"] = travel_details
+                    self._travel_mode_data[travel_mode_date]["color"] = self._planned_dates[str(start_idx)]["color"]
 
     #============================================================
     # Fetch Queryset
@@ -164,5 +178,15 @@ class GetCalendar:
                 new_tag["style"] = f"background-color:{self._planned_dates[travel_value["planned_date"]]["color"]}"
                 new_tag.string = f"Travelling by {travel_value["travel_mode"]}"
                 cell.append(new_tag)
+
+
+        print(self._travel_mode_data)
+        for key, value in self._travel_mode_data.items():
+            cell = soup.find(id=key)
+            new_tag = soup.new_tag("span", **{'class':'planned_tour', 'title':value["travel_details"]})
+            new_tag["style"] = f"background-color:{value["color"]};"
+            new_tag.string = mark_safe(value["travel_details"])
+            cell.append(new_tag)
+
 
         self._calendar_output = soup.prettify()
