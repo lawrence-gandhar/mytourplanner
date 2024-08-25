@@ -24,7 +24,6 @@ from app.modules import custom_constants as cs
 from datetime import datetime
 import json
 
-
 # =====================================================
 # Update TourData
 # =====================================================

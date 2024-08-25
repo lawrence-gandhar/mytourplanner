@@ -51,6 +51,12 @@ class LoginView(View):
 # =====================================================
 # Home Page
 # =====================================================
+
+
+def create_calendar(request):
+    return render(request, "calendar.html")
+
+
 @login_required(login_url="login")
 def home(request):
     if request.method == "GET":
