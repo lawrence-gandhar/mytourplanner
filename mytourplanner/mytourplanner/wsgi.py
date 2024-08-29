@@ -1,5 +1,5 @@
 """
-WSGI config for mytourplanner project.
+WSGI config for mytour project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

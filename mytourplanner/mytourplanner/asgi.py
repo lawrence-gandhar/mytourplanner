@@ -1,5 +1,5 @@
 """
-ASGI config for mytourplanner project.
+ASGI config for mytour project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
