@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from django.db.models import F
+from django.db.models import F, DateField, IntegerField, ExpressionWrapper
+from django.db.models.functions import Cast
 
 from app.models import (
     TourData,
@@ -30,10 +31,16 @@ def fetch_tourdata(user_id, limit=None, page=None, **kwargs):
 def fetch_planned_tours(queryset=None):
     result = queryset.filter(
             travel_start_date__isnull = True
+        ).annotate(
+            planned_till=ExpressionWrapper(
+                F('plan_to_start_on') + F('planned_no_days'), 
+                output_field=DateField()
+            )
         ).values(
             'id', 'created_on', 'plan_to_start_on', 'travel_start_date', 
-            'travel_end_date', 'source', 'destination', 'put_on_hold'
+            'travel_end_date', 'source', 'destination', 'put_on_hold', 'planned_no_days', 'planned_till'
         )
+    print(result.query)
     return result
 
 

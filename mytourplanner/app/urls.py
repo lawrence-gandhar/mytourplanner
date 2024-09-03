@@ -5,12 +5,20 @@ from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
 
+from app.api import tours_api
+
 # Home Views 
 urlpatterns = [
     path("", app_view.LoginView.as_view(), name="login"),
     path("home/", app_view.home, name="home"),
     path("create_calendar/", app_view.create_calendar, name="create_calendar")
 ]
+
+# API
+urlpatterns += [
+    path("api/planned-tours", tours_api.ListPlannedTours.as_view(), name="planned_tours"),
+]
+
 
 # TourData Validators
 urlpatterns +=[
