@@ -155,6 +155,7 @@ class GetCalendar:
             border-radius: 100%;
             padding: 5px;
             cursor: pointer;
+            color: #fff;
         """
 
         month_holder = soup.find("th", class_="month")
