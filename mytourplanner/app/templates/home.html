@@ -92,8 +92,9 @@
                                             <a href="{% url 'tour_next_step' row.id %}" style="text-decoration: none; color:#000000;">
                                                 <i class="fas fa-pencil" title="Edit Record" style="cursor:pointer;"></i>
                                             </a>
-                                            
-                                            <i class="fas fa-trash" title="Delete Record" style="cursor:pointer; color:#ff0000; margin-left:10px;"></i>
+                                            <a href="{% url 'delete_tour' row.id %}" style="color:#000000;"></a>
+                                                <i class="fas fa-trash" title="Delete Record" style="cursor:pointer; color:#ff0000; margin-left:10px;"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -171,8 +172,12 @@
                                         <td>{{row.plan_to_start_on}}</td>
                                         <td style="text-align:center;">{% tick_mark row.put_on_hold %}</td>
                                         <td style="text-align: center;">
-                                            <i class="fas fa-pencil" title="Edit Record" style="cursor:pointer;"></i>
-                                            <i class="fas fa-trash" title="Delete Record" style="cursor:pointer; color:#ff0000; margin-left:10px;"></i>
+                                            <a href="{% url 'tour_next_step' row.id %}" style="color:#000000;">
+                                                <i class="fas fa-pencil" title="Edit Record" style="cursor:pointer;"></i>
+                                            </a>
+                                            <a href="{% url 'tour_next_step' row.id %}" style="color:#000000;">
+                                                <i class="fas fa-trash" title="Delete Record" style="cursor:pointer; color:#ff0000; margin-left:10px;"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -253,7 +258,9 @@
                                         <td>{{row.plan_to_start_on}}</td>
                                         <td>{{row.modified_on|date_format}}</td>
                                         <td style="text-align: center;">
-                                            <i class="fas fa-trash" title="Delete Record" style="cursor:pointer; color:#ff0000; margin-left:10px;"></i>
+                                            <a href="{% url 'delete_tour' row.id %}" style="color:#000000;">
+                                                <i class="fas fa-trash" title="Delete Record" style="cursor:pointer; color:#ff0000; margin-left:10px;"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 {% endfor %}

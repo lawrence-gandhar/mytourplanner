@@ -12,7 +12,7 @@ urlpatterns = [
     path("", app_view.LoginView.as_view(), name="login"),
     path("home/", app_view.home, name="home"),
     # path("logout/", )
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 # AJAX Calls
 urlpatterns += [
@@ -36,9 +36,14 @@ urlpatterns += [
     path("add_tour/", tour_view.add_tour, name="add_tour"),
     path("tour_next_step/<int:id>/", tour_view.tour_next_step, name="tour_next_step"),
     path("add_update_travel_date/<int:id>/", tour_view.add_update_travel_date, name="add_update_travel_date"),
-    path("add_travel_mode_cost/<int:id>/", travel_mode.add_travel_mode_cost, name="add_travel_mode_cost"),
     path("update_tour/", tour_view.update_tour, name="update_tour"),
     path('end_tour/<int:id>/', tour_view.end_tour, name="end_tour"),
-    path('delete_tour/<int:id>/', tour_view.delete_tour, name="delete_tour")
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('delete_tour/<int:id>/', tour_view.delete_tour, name="delete_tour"),
+    path('cancel_tour/<int:id>/', tour_view.cancel_tour, name="cancel_tour")
+] 
+
+# CRUD TravelMode
+urlpatterns += [
+    path("add_travel_mode_cost/<int:id>/", travel_mode.add_travel_mode_cost, name="add_travel_mode_cost"),
+]
 

@@ -154,9 +154,32 @@ def end_tour(request, id=None):
 
     return redirect("tour_next_step", id)
 
+
 # =====================================================
 # Delete Tour
 # =====================================================
 @login_required(login_url="login")
 def delete_tour(request, id=None):
-    pass
+    try:
+        ins = TourData.objects.get(pk=int(id), user_id=request.session["user_id"]).delete()
+        messages.add_message(request, messages.SUCCESS, "Tour Deleted Successfuly")
+    except:
+        messages.ERROR(request, "Invalid operation performed")
+    return redirect("tour_next_step", id)
+
+
+# =====================================================
+# Delete Tour
+# =====================================================
+@login_required(login_url="login")
+def cancel_tour(request, id=None):
+    try:
+        ins = TourData.objects.get(pk=int(id), user_id=request.session["user_id"])
+        ins.cancelled = True
+        ins.travel_start_date = None
+        ins.travel_end_date = None
+        ins.save()
+        messages.add_message(request, messages.SUCCESS, "Tour Cancelled Successfuly")
+    except:
+        messages.ERROR(request, "Invalid operation performed")
+    return redirect("tour_next_step", id)
