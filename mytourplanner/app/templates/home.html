@@ -10,9 +10,11 @@
 </head>
 <body>
     <div class="container-fluid">
-        <div class="row main-menu">
+        <!-- <div class="row main-menu">
             <span id="brand">MyTravelPlanner</span>
-        </div>
+        </div> -->
+
+        {% include 'header.html' %}
 
         <!-- Message Box -->
 
@@ -55,7 +57,7 @@
                             Add Plan
                         </button>
                     </div>
-                    <div class="card-body card-border" style="padding:0px;height:230px; overflow-y:auto;">
+                    <div class="card-body card-border" style="padding:0px;height:230px; overflow-y:auto;" id="myCalendar">
                         {{ calendar|safe }}
                     </div>
                 </div>
@@ -87,7 +89,10 @@
                                         <td>{{row.plan_to_start_on}}</td>
                                         <td>{{row.plan_end_date}}</td>
                                         <td style="text-align: center;">
-                                            <i class="fas fa-pencil" title="Edit Record" style="cursor:pointer;"></i>
+                                            <a href="{% url 'tour_next_step' row.id %}" style="text-decoration: none; color:#000000;">
+                                                <i class="fas fa-pencil" title="Edit Record" style="cursor:pointer;"></i>
+                                            </a>
+                                            
                                             <i class="fas fa-trash" title="Delete Record" style="cursor:pointer; color:#ff0000; margin-left:10px;"></i>
                                         </td>
                                     </tr>
@@ -124,12 +129,13 @@
                                         <td>{{row.source|upper}}</td>
                                         <td>{{row.destination|upper}}</td>
                                         <td>{{row.created_on|date_format}}</td>
-                                        <td>{{row.plan_to_start_on}}</td>
+                                        <td>{{row.plan_to_start_on|default_if_none:'NA'}}</td>
                                         <td>{{row.travel_start_date|default_if_none:''}}</td>
                                         <td>{{row.travel_end_date|default_if_none:''}}</td>
                                         <td style="text-align: center;">
-                                            <i class="fas fa-pencil" title="Edit Record" style="cursor:pointer;"></i>
-                                            <i class="fas fa-trash" title="Delete Record" style="cursor:pointer; color:#ff0000; margin-left:10px;"></i>
+                                            <a href="{% url 'delete_tour' row.id %}" style="color:#000000;">
+                                                <i class="fas fa-trash" title="Delete Record" style="cursor:pointer; color:#ff0000; margin-left:10px;"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -166,6 +172,87 @@
                                         <td style="text-align:center;">{% tick_mark row.put_on_hold %}</td>
                                         <td style="text-align: center;">
                                             <i class="fas fa-pencil" title="Edit Record" style="cursor:pointer;"></i>
+                                            <i class="fas fa-trash" title="Delete Record" style="cursor:pointer; color:#ff0000; margin-left:10px;"></i>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-sm-12" style="margin:10px 0px;">
+                <div class="card" style="padding:0px; height:290px; border:0px;">
+                    <div class="card-header card-border" style="border-bottom:0px; background-color: #ffd397;">
+                        On-Going Tours
+                        <button type="button" class="btn btn-sm bordered-button" style="float:right;padding:0px 5px;">
+                            View All
+                        </button>
+                    </div>
+                    <div class="card-body card-border" style="padding:0px; height:230px; overflow-y:auto;">
+                        <table id="latest_tourdata" class="table table-responsive table-bordered" style="margin:0px;">
+                            <tbody>
+                                <tr> 
+                                    <th>Source</th> 
+                                    <th>Destination</th> 
+                                    <th>Created On</th> 
+                                    <th>Planned For</th> 
+                                    <th>Tour Start date</th> 
+                                    <th>Tour End Date</th> 
+                                    <th>Action</th> 
+                                </tr>
+                                {% for row in on_going_tours %}
+                                    <tr>
+                                        <td>{{row.source|upper}}</td>
+                                        <td>{{row.destination|upper}}</td>
+                                        <td>{{row.created_on|date_format}}</td>
+                                        <td>{{row.plan_to_start_on|default_if_none:'NA'}}</td>
+                                        <td>{{row.travel_start_date|default_if_none:''}}</td>
+                                        <td>{{row.travel_end_date|default_if_none:''}}</td>
+                                        <td style="text-align: center;">
+                                            <a href="{% url 'tour_next_step' row.id %}" style="color:#000000;">
+                                                <i class="fas fa-pencil" title="Edit Record" style="cursor:pointer;"></i>
+                                            </a>
+                                            <a href="{% url 'delete_tour' row.id %}" style="color:#000000;">
+                                                <i class="fas fa-trash" title="Delete Record" style="cursor:pointer; color:#ff0000; margin-left:10px;"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12" style="margin:10px 0px;">
+                <div class="card" style="padding:0px; height:290px; border:0px;">
+                    <div class="card-header card-border" style="border-bottom:0px; background-color: #ffd397;">
+                        Cancelled Tours
+                        <button type="button" class="btn btn-sm bordered-button" style="float:right;padding:0px 5px;">
+                            View All
+                        </button>
+                    </div>
+                    <div class="card-body card-border" style="padding:0px;">
+                        <table id="onhold_tourdata" class="table table-responsive table-bordered" style="margin:0px;">
+                            <tbody>
+                                <tr> 
+                                    <th>Source</th> 
+                                    <th>Destination</th> 
+                                    <th>Created On</th> 
+                                    <th>Planned For</th> 
+                                    <th>Cancelled On</th> 
+                                    <th>Action</th> 
+                                </tr>
+                                {% for row in cancelled_tour %}
+                                    <tr>
+                                        <td>{{row.source|upper}}</td>
+                                        <td>{{row.destination|upper}}</td>
+                                        <td>{{row.created_on|date_format}}</td>
+                                        <td>{{row.plan_to_start_on}}</td>
+                                        <td>{{row.modified_on|date_format}}</td>
+                                        <td style="text-align: center;">
                                             <i class="fas fa-trash" title="Delete Record" style="cursor:pointer; color:#ff0000; margin-left:10px;"></i>
                                         </td>
                                     </tr>
@@ -264,7 +351,7 @@
                                         Planned
                                     </div>
                                     <div class="card-body no-border tiles">
-                                        44555555
+                                        {{ tour_counters.planned_tours }}
                                     </div>
                                 </div>
                             </div>
@@ -274,7 +361,7 @@
                                         Completed
                                     </div>
                                     <div class="card-body no-border tiles">
-                                        
+                                        {{ tour_counters.travelled_tours }}
                                     </div>
                                 </div>
                             </div>
@@ -284,7 +371,7 @@
                                         On-hold
                                     </div>
                                     <div class="card-body no-border tiles">
-                    
+                                        {{ tour_counters.on_hold_tours }}
                                     </div>
                                 </div>
                             </div>
@@ -294,7 +381,7 @@
                                         Total Budget
                                     </div>
                                     <div class="card-body no-border tiles">
-                    
+                                        {{ tour_counters.total_budget }}
                                     </div>
                                 </div>
                             </div>
@@ -304,7 +391,7 @@
                                         Total Spent
                                     </div>
                                     <div class="card-body no-border tiles">
-                    
+                                        {{ tour_counters.total_spent }}
                                     </div>
                                 </div>
                             </div>
@@ -314,7 +401,7 @@
                                         Total Distance
                                     </div>
                                     <div class="card-body no-border tiles">
-                    
+                                        {{ tour_counters.total_distance }}
                                     </div>
                                 </div>
                             </div>
@@ -335,7 +422,7 @@
                                         Highest Budget
                                     </div>
                                     <div class="card-body no-border tiles">
-                    
+                                        {{ tour_counters.highest_budget }}
                                     </div>
                                 </div>
                             </div>
@@ -345,7 +432,7 @@
                                         Lowest Budget
                                     </div>
                                     <div class="card-body no-border tiles">
-                    
+                                        {{ tour_counters.lowest_budget }}
                                     </div>
                                 </div>
                             </div>
@@ -355,7 +442,7 @@
                                         Highest Spent
                                     </div>
                                     <div class="card-body no-border tiles">
-                    
+                                        {{ tour_counters.highest_spent }}
                                     </div>
                                 </div>
                             </div>
@@ -365,7 +452,7 @@
                                         Lowest Spent
                                     </div>
                                     <div class="card-body no-border tiles">
-                    
+                                        {{ tour_counters.lowest_spent }}
                                     </div>
                                 </div>
                             </div>
@@ -375,7 +462,7 @@
                                         Longest Travel
                                     </div>
                                     <div class="card-body no-border tiles">
-                    
+                                        {{ tour_counters.longest_travel }}
                                     </div>
                                 </div>
                             </div>
@@ -385,7 +472,7 @@
                                         Shortest Travel
                                     </div>
                                     <div class="card-body no-border tiles">
-                    
+                                        {{ tour_counters.shortest_travel }}
                                     </div>
                                 </div>
                             </div>
@@ -523,7 +610,43 @@
 
         $(document).ready(function(){
             $("table.month").addClass("table table-responsive table-bordered");
+
+            $("div#myCalendar").on("click", "span#month-prev-btn", function(e){
+                e.preventDefault()
+
+                month = $(this).attr("month")
+                year = $(this).attr("year")
+
+                if (month < 1) {
+                    year = parseInt(year) - 1;
+                    month = 12 
+                }  
+                
+                fetch_calendar_data(year=year, month=month)
+            });
+
+            $("div#myCalendar").on("click", "span#month-next-btn", function(e){
+                e.preventDefault()
+
+                month = $(this).attr("month")
+                year = $(this).attr("year")
+
+                if (month > 12) {
+                    year = parseInt(year) + 1;
+                    month = 1 
+                }
+                
+                fetch_calendar_data(year=year, month=month)
+            });
         });
+
+
+        function fetch_calendar_data(shift=0){
+            $.get("{% url 'fetch_calendar' %}", {"month":month, "year":year}, function(data){
+                $("div#myCalendar").empty().append(data);
+                $("table.month").addClass("table table-responsive table-bordered");
+            });
+        }
 
         
         /*******************************************/
@@ -545,7 +668,6 @@
 
 
         function edit_canvas(id){
-
             $.get("{% url 'update_tour' %}", {"id":id}, function(data){
                 $("#edit_source").val(data.source.toUpperCase());
                 $("#edit_destination").val(data.destination.toUpperCase());
@@ -558,13 +680,11 @@
                 $("#edit_budget").val(data.budget);
             });
 
-
             let edit_canvas = new bootstrap.Offcanvas(document.getElementById('edit_canvas'));
             edit_canvas.show();
         }
 
         
-
     </script>
 
 </body>

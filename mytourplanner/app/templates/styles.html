@@ -16,12 +16,30 @@
     }
 
     #brand{
-        display:inline-block;
+        display:contents;
     }
 
     .main-menu{
         background-color: #ffa500;
         padding:10px;
+    }
+
+    .main-menu > ul{
+        padding:0px;
+        margin:0px;
+        display: inline-block;
+        width: 88%;
+    }
+
+    .main-menu > ul > li{
+        list-style-type: none;
+        padding: 0px 10px;
+        float:right;
+    }
+
+    .main-menu > ul > li > a{
+        text-decoration: none;
+        color:#000000;
     }
 
     td.current_date{
@@ -170,4 +188,11 @@
         font-size: 70%;
         display: block;
     }
+
+    a{
+        text-decoration: none;
+        color:#000000;
+    }
+
+
 </style>

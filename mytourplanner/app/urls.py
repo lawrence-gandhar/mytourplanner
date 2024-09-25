@@ -11,12 +11,18 @@ from app.api import tours_api
 urlpatterns = [
     path("", app_view.LoginView.as_view(), name="login"),
     path("home/", app_view.home, name="home"),
-    path("create_calendar/", app_view.create_calendar, name="create_calendar")
+    # path("logout/", )
 ]
+
+# AJAX Calls
+urlpatterns += [
+    path("fetch_calendar/", app_view.fetch_calendar, name="fetch_calendar")
+]
+
 
 # API
 urlpatterns += [
-    path("api/planned-tours", tours_api.ListPlannedTours.as_view(), name="planned_tours"),
+    path("api/planned-tours/", tours_api.ListPlannedTours.as_view(), name="planned_tours"),
 ]
 
 
@@ -32,5 +38,7 @@ urlpatterns += [
     path("add_update_travel_date/<int:id>/", tour_view.add_update_travel_date, name="add_update_travel_date"),
     path("add_travel_mode_cost/<int:id>/", travel_mode.add_travel_mode_cost, name="add_travel_mode_cost"),
     path("update_tour/", tour_view.update_tour, name="update_tour"),
+    path('end_tour/<int:id>/', tour_view.end_tour, name="end_tour"),
+    path('delete_tour/<int:id>/', tour_view.delete_tour, name="delete_tour")
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

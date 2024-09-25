@@ -84,6 +84,16 @@ class TourData(models.Model):
         db_index = True
     )
 
+    cancelled = models.BooleanField(
+        default = False,
+        db_index = True
+    )
+
+    cancelled_due_to = models.TextField(
+        null = True,
+        blank = True,
+    ) 
+
     no_of_adults =  models.IntegerField(
         default = 1,    
         null = False,

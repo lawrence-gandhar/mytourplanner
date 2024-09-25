@@ -10,28 +10,38 @@ from app.modules import custom_constants as cs
 from django.utils.safestring import mark_safe
 
 class GetCalendar:
+    
+    def __init__(self):
 
-    _calendar_output = ""
-    _current_date = datetime.now()
-
-    def __init__(self, user_id=None, queryset=None):
-        self._user_id = user_id
-        self.queryset = queryset
+        self._calendar_output = ""
+        self.current_date = None
+        self._user_id = None
+        self.queryset = None
         self._planned_dates = {}
         self._planned_index = {}
         self._selected_colors = []
         self._travel_start = {}
         self._travel_mode_data = {}
-        self._tourdata = self._get_calendar_data()
-        self._planned_dates_formatter()
+        self.current_date = datetime.now()
+        self.today = datetime.now().day
+        self.today_month = datetime.now().month
+        self.today_year = datetime.now().year
         
-
     #============================================================
     # Create & Return HtmlCalender with all details
     #============================================================
-    def htmlcalendar(self):
+    def htmlcalendar(self, user_id=None, queryset=None, month=None, year=None):
+
+        self._user_id = user_id
+        self.queryset = queryset
+
+        if all([month, year]):
+            self.current_date = datetime(year, month, 1)
+
+        self._tourdata = self._get_calendar_data()
+        self._planned_dates_formatter()
         text_cal = calendar.HTMLCalendar(firstweekday=0)
-        self._calendar_output = text_cal.formatmonth(self._current_date.year, self._current_date.month)
+        self._calendar_output = text_cal.formatmonth(self.current_date.year, self.current_date.month)
         self._complete_soup()
         return self._calendar_output
     
@@ -49,23 +59,22 @@ class GetCalendar:
             "#009999", "#008080", "#006666" # teal shades
         )
 
-        color = random.choice(color_code)
-        if color is not None:
-            if color not in self._selected_colors:
+        while True:
+            color = random.choice(color_code)
+            if color not in self._selected_colors and color is not None:
                 self._selected_colors.append(color)
                 return color.upper()
-            else:
-                self._generate_color_code()
-        else:
-            self._generate_color_code()
-
+            
     #============================================================
     # Generate Dictionary for Planned Dates Formatting
     #============================================================
     def _planned_dates_formatter(self):
         for record in self._tourdata:
-
-            start_idx = int(record["plan_to_start_on"].strftime("%d"))
+            if record["plan_to_start_on"] is not None:
+                start_idx = int(record["plan_to_start_on"].strftime("%d"))
+            
+            if record["travel_start_date"]:
+                start_idx = int(record["travel_start_date"].strftime("%d"))
 
             date_range = [start_idx]
             if record["planned_no_days"] > 1:
@@ -118,8 +127,12 @@ class GetCalendar:
     #============================================================
     def _get_calendar_data(self):
 
-        created_on_gte = datetime(self._current_date.year, self._current_date.month, 1)
-        created_on_lte = datetime(self._current_date.year, self._current_date.month + 1, 1) + timedelta(days=-1)
+        created_on_gte = datetime(self.current_date.year, self.current_date.month, 1)
+
+        if self.current_date.month < 12:
+            created_on_lte = datetime(self.current_date.year, self.current_date.month + 1, 1) + timedelta(days=-1)
+        else:
+            created_on_lte = datetime(self.current_date.year + 1, 1, 1) + timedelta(days=-1)
 
         return dbops.fetch_calendar_data(queryset=self.queryset, start_date=created_on_gte, end_date=created_on_lte)
     
@@ -130,12 +143,48 @@ class GetCalendar:
         soup = BeautifulSoup(self._calendar_output, features="html.parser")
         rows = soup.find_all("tr")
 
-        tour_started_dates = [
-            str(int(row["travel_start_date"].strftime("%d"))) 
-            for row in self._tourdata
-            if row["travel_start_date"] is not None
-        ]
+        #
+        # create prev/next month buttons in <th>
+        #
+        icon_bg = """
+            position:relative; 
+            display:inline; 
+            width:20px; 
+            height:20px;
+            background-color: #000000;
+            border-radius: 100%;
+            padding: 5px;
+            cursor: pointer;
+        """
 
+        month_holder = soup.find("th", class_="month")
+        prev_btn = soup.new_tag("span", **{"year":self.current_date.year, "month":self.current_date.month - 1})
+        prev_btn["style"] = icon_bg+"float:left;"
+        prev_btn["id"] = "month-prev-btn"
+
+        prev_icon = soup.new_tag("i", **{"class": "fas fa-chevron-left"})
+        prev_btn.append(prev_icon)
+
+        next_btn = soup.new_tag("span", **{"year":self.current_date.year, "month":self.current_date.month + 1})
+        next_btn["style"] = icon_bg + "float:right;"
+        next_btn["id"] = "month-next-btn"
+
+        next_icon = soup.new_tag("i", **{"class": "fas fa-chevron-right"})
+        next_btn.append(next_icon)
+
+        month_holder.append(prev_btn) 
+        month_holder.append(next_btn)
+
+        today_month_year = datetime.strptime(month_holder.text.strip(), "%B %Y").strftime("%m-%Y").split("-")
+
+        is_today = False
+        if (self.today_month == int(today_month_year[0]) and self.today_year == int(today_month_year[1])):
+            is_today = True
+        
+
+        #
+        # style the columns 
+        #
         for row in rows:
             cells = row.find_all("td")
             for cell in cells:
@@ -143,14 +192,12 @@ class GetCalendar:
                     cell["id"] = cell.text
                     cell["style"] = "width:14%;text-align:center;padding:5px 0px 5px 0px;"
 
-                if cell.text == str(self._current_date.day):
+                if cell.text == str(self.today) and is_today:
                     cell["class"].append("current_date")
 
-                if cell.text in tour_started_dates:
-                    background_color = self._planned_dates[self._travel_start[cell.text]["planned_date"]]["color"]
-                    cell["style"] = f"""background-color:{background_color}; color:#ffffff; font-weight:bold; 
-                                        text-align:center;padding:5px 0px 5px 0px;"""
-                    
+        #
+        # substitute data and style the columns based on the data
+        #       
         for val in self._planned_dates.values():
             for tour in val["date_range"]:
                 cell = soup.find(id=str(tour))
@@ -171,16 +218,7 @@ class GetCalendar:
                 new_tag.string = mark_safe(f"Travelling From {tour} as planned. Date: {planned_date}")
                 cell.append(new_tag)
 
-            if travel_value["travel_mode_found"]:
-                title = f"Travelling by {travel_value["travel_mode"]}"
-                cell = soup.find(id=travel_key)
-                new_tag = soup.new_tag("span", **{'class':'planned_tour', 'title':title})
-                new_tag["style"] = f"background-color:{self._planned_dates[travel_value["planned_date"]]["color"]}"
-                new_tag.string = f"Travelling by {travel_value["travel_mode"]}"
-                cell.append(new_tag)
-
-
-        print(self._travel_mode_data)
+        #
         for key, value in self._travel_mode_data.items():
             cell = soup.find(id=key)
             new_tag = soup.new_tag("span", **{'class':'planned_tour', 'title':value["travel_details"]})

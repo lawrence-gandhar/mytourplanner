@@ -64,10 +64,13 @@ def add_tour(request):
 # View for TourData Next Steps
 # =====================================================
 @login_required(login_url="login")
-def tour_next_step(request, id):
+def tour_next_step(request, id=None):
     data = {}
 
     ins = dbops.get_tourdata(id)
+
+    print(ins)
+
     if ins:
 
         tour_data = dbops.fetch_travelmode_data(tour_data_id=int(id))
@@ -98,8 +101,9 @@ def tour_next_step(request, id):
             "travel_mode_form": TravelModeCreateForm(prefix="travel_mode"),
             "travel_cost_form": TravelModeCostCreateForm(prefix="travel_cost")
         })
-    return render(request, "tour_next_step.html", data)
-
+        return render(request, "tour_next_step.html", data)
+    else:
+        return HttpResponseNotFound()
 
 # =====================================================
 # Add/Update for TourData Next Steps
@@ -133,3 +137,26 @@ def update_tour(request):
     ins = TourData.objects.get(pk=request.GET["id"]).values_list()
     return JsonResponse(ins, safe=False)
 
+
+# =====================================================
+# End Tour
+# =====================================================
+@login_required(login_url="login")
+def end_tour(request, id=None):
+    try:
+        ins = TourData.objects.get(pk=int(id), user_id=request.session["user_id"])
+        ins.travel_end_date = datetime.now()
+        ins.plan_to_start_on = None
+        ins.save()
+        messages.add_message(request, messages.SUCCESS, "Tour Ended")
+    except:
+        messages.ERROR(request, "Invalid operation performed")
+
+    return redirect("tour_next_step", id)
+
+# =====================================================
+# Delete Tour
+# =====================================================
+@login_required(login_url="login")
+def delete_tour(request, id=None):
+    pass
