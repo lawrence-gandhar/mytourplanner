@@ -271,7 +271,9 @@
                                     {% if not ins.travel_end_date %}
                                     <div class="row" style="margin-top:5px; margin-bottom:10px;">
                                         <div class="col-md-12">
-                                            <button class="btn btn-sm btn-success" onclick="openAddTravelMode()" type="button" style="float:right;">
+                                            <button class="btn btn-sm btn-success" 
+                                            data-bs-toggle="offcanvas" data-bs-target="#offcanvasTravelMode" aria-controls="offcanvasTravelMode"
+                                            type="button" style="float:right;">
                                                 Add Travel Mode
                                             </button>
                                             <button class="btn btn-sm btn-primary" type="button" 
@@ -281,108 +283,6 @@
                                         </div>
                                     </div>
                                     {% endif %}
-
-                                    <div class="col-md-12" id="add_travel_form_div" style="display:none;">
-                                        <div class="card" style="margin-bottom:10px;">
-                                            <div class="card-header card-border card-header-orange">
-                                                Add New Travel Mode
-                                            </div>
-                                            <div class="card-body card-border" style="padding:10px;">
-                                                <div class="col-md-12 alert bg-green-alert">
-                                                    All the fields can be changed based on your requirements. `Source`, `Destination`, 
-                                                    `No. of Adults` and `No.of Children` can be changed as per the travel mode.
-                                                </div>
-
-                                                <div id="error-msgs" class="alert alert-danger" style="display:none;padding: 5px;"></div>
-
-                                                <form style="margin-bottom:0px;" id="travelmodeCreateForm" action="{% url 'add_travel_mode_cost' ins.id %}" method="post" class="form">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="id">
-                                                    <div class="row" style="margin-top:10px;">
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_mode-source" class="form-label">Source</label>
-                                                            <input type="text" name="travel_mode-source" maxlength="250" 
-                                                            class="form-control form_fields" required 
-                                                            id="id_travel_mode-source" value="{{ ins.source }}">
-                                                        </div>
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_mode-destination" class="form-label">Destination</label>
-                                                            <input type="text" name="travel_mode-destination" maxlength="250" 
-                                                            class="form-control form_fields" required 
-                                                            id="id_travel_mode-destination" value="{{ ins.destination }}">
-                                                        </div>
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_mode-travel_mode" class="form-label">Date of Travel</label>
-                                                            {{ travel_mode_form.travel_date|safe }}
-                                                        </div>
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_mode-travel_mode" class="form-label">Mode of Travel</label>
-                                                            {{ travel_mode_form.travel_mode|safe }}
-                                                        </div>
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_mode-travel_class_type" class="form-label">Travel Class Type</label>
-                                                            {{ travel_mode_form.travel_class_type|safe }}
-                                                        </div>
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_mode-distance" class="form-label">Distance</label>
-                                                            {{ travel_mode_form.distance|safe }}
-                                                        </div>
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_mode-vendor" class="form-label">Company</label>
-                                                            {{ travel_mode_form.vendor|safe }}
-                                                        </div>
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_mode-no_of_adults" class="form-label">No. Of Adults</label>
-                                                            {{ travel_mode_form.no_of_adults|safe }}
-                                                        </div>
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_cost-cost_per_adult" class="form-label">Cost Per Adult</label>
-                                                            {{ travel_cost_form.cost_per_adult|safe }}
-                                                        </div>
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_mode-no_of_children" class="form-label">No. Of Children</label>
-                                                            {{ travel_mode_form.no_of_children|safe }}
-                                                        </div>
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_cost-cost_per_child" class="form-label">Cost Per Child</label>
-                                                            {{ travel_cost_form.cost_per_child|safe }}
-                                                        </div>
-                                                        
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_mode-gst" class="form-label">Total GST Amount</label>
-                                                            {{ travel_mode_form.gst|safe }}
-                                                        </div>
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_mode-discount_type" class="form-label">Discount Type</label>
-                                                            <select id="id_travel_mode-discount_type" class="form-control form_fields" onchange="get_total_amount()">
-                                                                <option value="0">Percent</option>
-                                                                <option value="1">Cash</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_mode-discount" class="form-label">Total Discount</label>
-                                                            {{ travel_mode_form.discount|safe }}
-                                                        </div>
-                                                        <div class="col-md-3 col-sm-4">
-                                                            <label for="id_travel_mode-total_cost" class="form-label">Total Amount</label>
-                                                            {{ travel_mode_form.total_cost|safe }}
-                                                        </div>
-                                                    </div>
-                                                    <div class="row" style="margin-top:5px; margin-bottom:10px;">
-                                                        <div class="col-md-12">
-                                                            <button class="btn btn-sm btn-success" onclick="submit_travel_mode_cost_form()" type="button" style="float:right;">
-                                                                Submit
-                                                            </button>
-                                                            <button class="btn btn-sm btn-primary" type="button" 
-                                                                style="float:right; margin-right: 5px;" onclick="go_to_next_tab('#nav-step-3')">
-                                                                Skip
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="nav-step-3" role="tabpanel" aria-labelledby="step_4" tabindex="0">
@@ -395,6 +295,123 @@
         </div>
     </div>
     {% endif %}
+
+    <!---->
+
+    <div class="offcanvas offcanvas-end" style="width: 90%;" tabindex="-1" id="offcanvasTravelMode" aria-labelledby="offcanvasLabel" data-bs-backdrop="false">
+        <form style="margin-bottom:0px;" id="travelmodeCreateForm" action="{% url 'add_travel_mode_cost' ins.id %}" method="post" class="form">
+        <div class="offcanvas-header  light-orange-bg">
+          <h5 class="offcanvas-title" id="offcanvasLabel">Add Mode Of Travel</h5>
+          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div class="col-md-12" id="add_travel_form_div">
+                
+                <div class="col-md-12 alert bg-green-alert">
+                    All the fields can be changed based on your requirements. `Source`, `Destination`, 
+                    `No. of Adults` and `No.of Children` can be changed as per the travel mode.
+                </div>
+        
+                <div id="error-msgs" class="alert alert-danger" style="display:none;padding: 5px;"></div>
+                    {% csrf_token %}
+                    <input type="hidden" name="id">
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col-md-3 col-sm-4">
+                            <label for="id_travel_mode-source" class="form-label">Source</label>
+                            <input type="text" name="travel_mode-source" maxlength="250" 
+                            class="form-control form_fields" required 
+                            id="id_travel_mode-source" value="{{ ins.source }}">
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                            <label for="id_travel_mode-destination" class="form-label">Destination</label>
+                            <input type="text" name="travel_mode-destination" maxlength="250" 
+                            class="form-control form_fields" required 
+                            id="id_travel_mode-destination" value="{{ ins.destination }}">
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                            <label for="id_travel_mode-travel_mode" class="form-label">Date of Travel</label>
+                            {{ travel_mode_form.travel_date|safe }}
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                            <label for="id_travel_mode-travel_mode" class="form-label">Mode of Travel</label>
+                            {{ travel_mode_form.travel_mode|safe }}
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                            <label for="id_travel_mode-travel_class_type" class="form-label">Travel Class Type</label>
+                            {{ travel_mode_form.travel_class_type|safe }}
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                            <label for="id_travel_mode-distance" class="form-label">Distance</label>
+                            {{ travel_mode_form.distance|safe }}
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                            <label for="id_travel_mode-vendor" class="form-label">Company</label>
+                            {{ travel_mode_form.vendor|safe }}
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                            <label for="id_travel_mode-no_of_adults" class="form-label">No. Of Adults</label>
+                            {{ travel_mode_form.no_of_adults|safe }}
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                            <label for="id_travel_cost-cost_per_adult" class="form-label">Cost Per Adult</label>
+                            {{ travel_cost_form.cost_per_adult|safe }}
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                            <label for="id_travel_mode-no_of_children" class="form-label">No. Of Children</label>
+                            {{ travel_mode_form.no_of_children|safe }}
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                            <label for="id_travel_cost-cost_per_child" class="form-label">Cost Per Child</label>
+                            {{ travel_cost_form.cost_per_child|safe }}
+                        </div>
+                        
+                        <div class="col-md-3 col-sm-4">
+                            <label for="id_travel_mode-gst" class="form-label">Total GST Amount</label>
+                            {{ travel_mode_form.gst|safe }}
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                            <label for="id_travel_mode-discount_type" class="form-label">Discount Type</label>
+                            <select id="id_travel_mode-discount_type" class="form-control form_fields" onchange="get_total_amount()">
+                                <option value="0">Percent</option>
+                                <option value="1">Cash</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                            <label for="id_travel_mode-discount" class="form-label">Total Discount</label>
+                            {{ travel_mode_form.discount|safe }}
+                        </div>
+                        <div class="col-md-3 col-sm-4">
+                            <label for="id_travel_mode-total_cost" class="form-label">Total Amount</label>
+                            {{ travel_mode_form.total_cost|safe }}
+                        </div>
+                    </div>
+                    <!--
+                    <div class="row" style="margin-top:5px; margin-bottom:10px;">
+                        <div class="col-md-12">
+                            <button class="btn btn-sm btn-success" onclick="submit_travel_mode_cost_form()" type="button" style="float:right;">
+                                Submit
+                            </button>
+                            <button class="btn btn-sm btn-primary" type="button" 
+                                style="float:right; margin-right: 5px;" onclick="go_to_next_tab('#nav-step-3')">
+                                Skip
+                            </button>
+                        </div>
+                    </div>
+                -->
+            </div>
+        </div>
+        <div class="offcanvas-footer canvas-footer">
+            <button type="button" class="btn btn-sm bordered-button" data-bs-dismiss="modal" onclick="go_to_next_tab('#nav-step-3')">Close</button>
+            <button type="button" class="btn btn-sm bordered-button" onclick="submit_travel_mode_cost_form()">Save changes</button>
+        </div>
+    </form>
+    </div>
+
+
+    
+    <!---->
+
+
 
     <!-- Tour Cancel Modal -->
     <div class="modal fade" id="cancel_tour" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
