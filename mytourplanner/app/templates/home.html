@@ -499,7 +499,7 @@
         <form id="tourCreateForm" action="{% url 'add_tour' %}" method="post" class="form">
             <div class="offcanvas-header light-orange-bg">
                 <h6 id="offcanvasRightLabel">Create a new Tour Plan</h6>
-                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" style="margin-right:10px;"></button>
             </div>
             <div class="offcanvas-body" style="overflow-y: auto; height:100%">
                 {% csrf_token %}
@@ -546,8 +546,8 @@
 
             </div>
             <div class="offcanvas-footer canvas-footer">
-                <button type="button" class="btn btn-sm bordered-button" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-sm bordered-button" onclick="add_form()">Save changes</button>
+                <button type="button" class="btn btn-sm bordered-button" data-bs-dismiss="offcanvas" aria-label="Close">Close</button>
+                <button type="button" class="btn btn-sm bordered-button" onclick="add_form()" style="margin-right:10px;">Save changes</button>
             </div>
         </form>
     </div>

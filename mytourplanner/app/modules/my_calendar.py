@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import random
 import re
 
-from app.modules import db_operations as dbops
+from app.modules import tourdata_db_operations as tourdata_dbops
 from app.modules import custom_constants as cs
 
 from django.utils.safestring import mark_safe
@@ -134,7 +134,7 @@ class GetCalendar:
         else:
             created_on_lte = datetime(self.current_date.year + 1, 1, 1) + timedelta(days=-1)
 
-        return dbops.fetch_calendar_data(queryset=self.queryset, start_date=created_on_gte, end_date=created_on_lte)
+        return tourdata_dbops.fetch_calendar_data(queryset=self.queryset, start_date=created_on_gte, end_date=created_on_lte)
     
     #============================================================
     # Put all details in the Calendar

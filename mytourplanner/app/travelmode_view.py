@@ -2,6 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import redirect
 
+from app.modules import travelmode_db_operations as travelmode_dbops
+
 from app.forms.travelmode_forms import TravelModeCreateForm, TravelModeCostCreateForm
 
 
@@ -33,3 +35,13 @@ def add_travel_mode_cost(request, id):
         travel_mode_ins.delete()
         messages.error(request, f"Form submission failed. {travel_cost_form.errors}")
     return redirect("tour_next_step", id)
+
+
+# =====================================================
+# Next Steps for TravelMode and TravelCost
+# =====================================================
+@login_required(login_url="login")
+def get_travel_mode(request, tour_id):
+    user_id = request.session["user_id"]
+
+    obj =  dbops()

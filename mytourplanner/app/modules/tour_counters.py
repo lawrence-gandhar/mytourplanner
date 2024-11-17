@@ -1,4 +1,5 @@
-from app.modules import db_operations as dbops
+from app.modules import tourdata_db_operations as tourdata_dbops
+from app.modules import travelmode_db_operations as travelmode_dbops
 import pandas as pd
 
 
@@ -9,7 +10,7 @@ class TourCounters:
         self._data = {}
 
     def process_data(self):
-        self._queryset = dbops.fetch_tour_counters(user_id = self._user_id)
+        self._queryset = tourdata_dbops.fetch_tour_counters(user_id = self._user_id)
         df = pd.DataFrame(self._queryset)
         df.set_index("id", inplace = True)
 
@@ -24,7 +25,7 @@ class TourCounters:
             (df["travel_start_date"].isnull() == True)
         ])
 
-        travel_mode_data = dbops.fetch_travelmode_data()
+        travel_mode_data = travelmode_dbops.fetch_travelmode_data()
         tf = pd.DataFrame(travel_mode_data)
 
         return {

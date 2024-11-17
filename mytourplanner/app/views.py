@@ -3,20 +3,11 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound, JsonResponse
 from django.views import View
 from django.contrib.auth.decorators import login_required
-from django.forms.models import model_to_dict
 
 from datetime import datetime
 
-from app.models import (
-    TourData,
-    TollData,
-    ViaStops,
-    StayData,
-    StopsData
-)
-
 from app.modules.my_calendar import GetCalendar
-from app.modules import db_operations as dbops
+from app.modules import tourdata_db_operations as tourdata_dbops
 from app.modules import custom_decorators as cds
 from app.modules import tour_counters as tc
 
@@ -56,7 +47,7 @@ class LoginView(View):
 def home(request):
     if request.method == "GET":
         user_id = request.session["user_id"]
-        queryset = dbops.fetch_tourdata(user_id)
+        queryset = tourdata_dbops.fetch_tourdata(user_id)
         calendar = GetCalendar()
         upcoming_tours= []
         unfinished_tours = []
@@ -65,7 +56,7 @@ def home(request):
 
         today = datetime.strptime(datetime.today().strftime("%Y-%m-%d"),"%Y-%m-%d").date()
 
-        planned_tours = dbops.fetch_planned_tours(queryset=queryset)
+        planned_tours = tourdata_dbops.fetch_planned_tours(queryset=queryset)
 
         tour_counters = tc.TourCounters(request.session["user_id"])
 
@@ -84,7 +75,7 @@ def home(request):
         context = {
             "calendar": calendar.htmlcalendar(user_id, queryset),
             "tour_plan_form": TourDataInitialForm(),
-            "completed_tours": dbops.fetch_completed_tours(queryset=queryset),
+            "completed_tours": tourdata_dbops.fetch_completed_tours(queryset=queryset),
             "upcoming_tours": upcoming_tours,
             "unfinished_tours": unfinished_tours,
             "current_date": today.strftime("%d %B, %Y"),
@@ -105,6 +96,6 @@ def fetch_calendar(request):
         month = request.GET.get("month", None)
         year = request.GET.get("year", None)
 
-        queryset = dbops.fetch_tourdata(user_id)
+        queryset = tourdata_dbops.fetch_tourdata(user_id)
         calendar = GetCalendar()
         return HttpResponse(calendar.htmlcalendar(user_id, queryset, month=int(month), year=int(year)))

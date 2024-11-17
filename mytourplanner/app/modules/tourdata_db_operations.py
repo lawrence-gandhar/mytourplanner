@@ -1,18 +1,10 @@
-from datetime import datetime, timedelta
+from django.db.models import F, DateField,  ExpressionWrapper, Q
+from app.models import TourData
 
-from django.db.models import F, DateField, IntegerField, ExpressionWrapper, Q
-from django.db.models.functions import Cast
 
-from app.models import (
-    TourData,
-    TravelMode,
-    TravelModeCost,
-    TollData,
-    ViaStops,
-    StayData,
-    StopsData
-)
-
+# =====================================================
+# Fetch TourData based on id
+# =====================================================
 def get_tourdata(id=None):
     try:
         result = TourData.objects.get(pk=id)
@@ -20,7 +12,9 @@ def get_tourdata(id=None):
     except:
         return None
     
-
+# =====================================================
+# Fetch TourData based on user id
+# =====================================================
 def fetch_tourdata(user_id, limit=None, page=None, **kwargs):
     result = TourData.objects.filter(
         user_id = user_id
@@ -28,6 +22,9 @@ def fetch_tourdata(user_id, limit=None, page=None, **kwargs):
     return result
 
 
+# =====================================================
+# Fetch Planned Tours
+# =====================================================
 def fetch_planned_tours(queryset=None):
     result = queryset.filter(
             travel_end_date__isnull = True
@@ -44,6 +41,9 @@ def fetch_planned_tours(queryset=None):
     return result
 
 
+# =====================================================
+# Fetch Completed Tours
+# =====================================================
 def fetch_completed_tours(queryset=None):
     result = queryset.filter(
             travel_end_date__isnull = False
@@ -54,6 +54,9 @@ def fetch_completed_tours(queryset=None):
     return result
 
 
+# =====================================================
+# Fetch Calendar Data
+# =====================================================
 def fetch_calendar_data(queryset=None, start_date=None, end_date=None):
     result = queryset.select_related("tour_data").filter(
             Q (
@@ -71,6 +74,9 @@ def fetch_calendar_data(queryset=None, start_date=None, end_date=None):
     return result
 
 
+# =====================================================
+# Fetch Tour Counters
+# =====================================================
 def fetch_tour_counters(user_id=None):
     result = TourData.objects.filter(
         user_id = user_id
@@ -81,34 +87,5 @@ def fetch_tour_counters(user_id=None):
     )
     return result
 
-
-def fetch_travelmode_data(travel_mode_id=None, tour_data_id=None, user_id=None):
-    
-    queryset = TravelMode.objects.select_related('travelmode_cost').all()
-
-    if tour_data_id:
-        queryset = queryset.filter(
-            tour_id = int(tour_data_id)
-        )
-
-    if travel_mode_id:
-        queryset = queryset.filter(
-            id = int(travel_mode_id)
-        )
-
-    if user_id:
-        queryset = queryset.filter(
-            user_id = int(user_id)
-        ) 
-    
-    queryset = queryset.values(
-            'travel_date', 'travel_mode', 'travel_class_type', 
-            'source', 'destination', 'distance', 'no_of_adults',
-            'no_of_children', 'vendor', 'total_cost', 'discount',
-            'gst', 'travelmode_cost__cost_per_adult',
-            'travelmode_cost__cost_per_child'
-        ) 
-     
-    return queryset
 
 

@@ -145,10 +145,15 @@
                                     aria-controls="nav-step-3" aria-selected="false" href="#nav-step-3">
                                     Via Stops
                                 </a>
+                                <a class="nav-link" style="text-decoration:none; color:#000000;" id="step_4" data-bs-toggle="tab" 
+                                    type="button" role="tab" 
+                                    aria-controls="nav-step-4" aria-selected="false" href="#nav-step-4">
+                                    Stop Details
+                                </a>
                             </div>
                         </nav>
                         <div class="tab-content" id="nav-tabContent">
-                            <div class="tab-pane fade show active" id="nav-step-1" role="tabpanel" aria-labelledby="step_2" tabindex="0">
+                            <div class="tab-pane fade show active" id="nav-step-1" role="tabpanel" aria-labelledby="step_1" tabindex="0">
                                 <div class="container-fluid">
                                     <form id="tourCreateForm" action="{% url 'add_update_travel_date' ins.id %}" method="post" class="form">
                                         {% csrf_token %}
@@ -156,14 +161,14 @@
                                         <div class="row" style="margin-top:10px;">
                                             <div class="col-md-6">
                                                 <label for="id_tourdata-travel_start_date" class="form-label">Travel Start Date</label>
-                                                <input type="date" name="tourdata-travel_start_date" value="{{ins.travel_start_date}}" class="form-control form_fields" 
-                                                required="" id="id_tourdata-travel_start_date" {% if ins.travel_end_date %} readonly="true" {% endif %}>
+                                                <input type="date" name="tourdata-travel_start_date" value="{{ins.travel_start_date|date:'Y-m-d'}}" class="form-control form_fields" 
+                                                required id="id_tourdata-travel_start_date" {% if ins.travel_end_date %} readonly="true" {% endif %}>
                                             </div>
                                             <div class="col-md-6">
                                                 <label for="id_tourdata-budget" class="form-label">Budget</label>
                                                 <input type="number" name="tourdata-budget" 
                                                 value="{{ins.budget}}" class="form-control form_fields" 
-                                                required="" step="0.01" id="id_tourdata-budget"
+                                                required step="0.01" id="id_tourdata-budget"
                                                 {% if ins.travel_end_date %} readonly="true" {% endif %}
                                                 >
                                             </div>
@@ -187,7 +192,7 @@
                                     </form>
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="nav-step-2" role="tabpanel" aria-labelledby="step_3" tabindex="0">
+                            <div class="tab-pane fade" id="nav-step-2" role="tabpanel" aria-labelledby="step_2" tabindex="0">
                                 <div class="container-fluid" style="padding:0px 5px;">
                                     <div class="col-md-12" style="margin-top:5px;">
                                         <table class="table table-bordered table-responsive" style="margin-top:10px; margin-bottom:10px;">
@@ -258,11 +263,11 @@
                                                 </tr>
                                                 <tr>
                                                     <th class="left-align">Total Expenditure on Travel</th>
-                                                    <th class="right-align bg-success">{{total_expenditure}}</th>
+                                                    <th class="right-align bg-success" style="color:#ffffff;">{{total_expenditure}}</th>
                                                 </tr>
                                                 <tr>
                                                     <th class="left-align">Total Distance Travelled (KM)</th>
-                                                    <th class="right-align bg-success">{{total_distance}}</th>
+                                                    <th class="right-align bg-success" style="color:#ffffff;">{{total_distance}}</th>
                                                 </tr>
                                             </table>
                                         </div>
@@ -285,8 +290,75 @@
                                     {% endif %}
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="nav-step-3" role="tabpanel" aria-labelledby="step_4" tabindex="0">
-                                hello
+                            <div class="tab-pane fade" id="nav-step-3" role="tabpanel" aria-labelledby="step_3" tabindex="0">
+                                <div class="container-fluid" style="padding:0px 5px;">
+                                    <div class="col-md-12" style="margin-top:5px;">
+                                        <table class="table table-bordered table-responsive" style="margin-top:10px; margin-bottom:10px;">
+                                            <tr>
+                                                <th class="left-align td-orange-bg">Stop Name</th>
+                                                <th class="left-align td-orange-bg">Place/Area</th>
+                                                <th class="left-align td-orange-bg">Stop Time</th>
+                                                <th class="left-align td-orange-bg">Started On</th>
+                                                <th class="left-align td-orange-bg">Next Stop</th>
+                                                <th class="left-align td-orange-bg">Skipped Next Stop</th>
+                                                <th class="left-align td-orange-bg">Reson To Skip</th>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="row" style="margin-top:5px; margin-bottom:10px;">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-sm btn-success" 
+                                            data-bs-toggle="offcanvas" data-bs-target="#stop_data_offcanvas" aria-controls="stop_data_offcanvas"
+                                            type="button" style="float:right;">
+                                                Add Via Stops
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="nav-step-4" role="tabpanel" aria-labelledby="step_4" tabindex="0">
+                                <div class="container-fluid" style="padding:0px 5px;">
+                                    <div class="col-md-12" style="margin-top:5px;">
+                                        <table class="table table-bordered table-responsive" style="margin-top:10px; margin-bottom:10px;">
+                                            <tr>
+                                                <th class="left-align td-orange-bg">Stop Name</th>
+                                                <th class="left-align td-orange-bg">Place/Area</th>
+                                                <th class="left-align td-orange-bg">Stop Time</th>
+                                                <th class="left-align td-orange-bg">Started On</th>
+                                                <th class="left-align td-orange-bg">Next Stop</th>
+                                                <th class="left-align td-orange-bg">Skipped Next Stop</th>
+                                                <th class="left-align td-orange-bg">Reason to skip</th>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="row" style="margin-top:5px; margin-bottom:10px;">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-sm btn-success" 
+                                            data-bs-toggle="offcanvas" data-bs-target="#stop_data_offcanvas" aria-controls="stop_data_offcanvas"
+                                            type="button" style="float:right;">
+                                                Add Via Stops
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -296,13 +368,13 @@
     </div>
     {% endif %}
 
-    <!---->
+    <!-- Add TourData Offcanvas  -->
 
     <div class="offcanvas offcanvas-end" style="width: 90%;" tabindex="-1" id="offcanvasTravelMode" aria-labelledby="offcanvasLabel" data-bs-backdrop="false">
         <form style="margin-bottom:0px;" id="travelmodeCreateForm" action="{% url 'add_travel_mode_cost' ins.id %}" method="post" class="form">
         <div class="offcanvas-header  light-orange-bg">
           <h5 class="offcanvas-title" id="offcanvasLabel">Add Mode Of Travel</h5>
-          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" style="margin-right:10px;"></button>
         </div>
         <div class="offcanvas-body">
             <div class="col-md-12" id="add_travel_form_div">
@@ -385,33 +457,16 @@
                             {{ travel_mode_form.total_cost|safe }}
                         </div>
                     </div>
-                    <!--
-                    <div class="row" style="margin-top:5px; margin-bottom:10px;">
-                        <div class="col-md-12">
-                            <button class="btn btn-sm btn-success" onclick="submit_travel_mode_cost_form()" type="button" style="float:right;">
-                                Submit
-                            </button>
-                            <button class="btn btn-sm btn-primary" type="button" 
-                                style="float:right; margin-right: 5px;" onclick="go_to_next_tab('#nav-step-3')">
-                                Skip
-                            </button>
-                        </div>
-                    </div>
-                -->
-            </div>
+                </div>
         </div>
         <div class="offcanvas-footer canvas-footer">
-            <button type="button" class="btn btn-sm bordered-button" data-bs-dismiss="modal" onclick="go_to_next_tab('#nav-step-3')">Close</button>
-            <button type="button" class="btn btn-sm bordered-button" onclick="submit_travel_mode_cost_form()">Save changes</button>
+            <button type="button" class="btn btn-sm bordered-button" data-bs-dismiss="offcanvas" aria-label="Close">Close</button>
+            <button type="button" class="btn btn-sm bordered-button" onclick="submit_travel_mode_cost_form()" style="margin-right:10px;">Save changes</button>
         </div>
     </form>
     </div>
 
-
-    
     <!---->
-
-
 
     <!-- Tour Cancel Modal -->
     <div class="modal fade" id="cancel_tour" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -434,7 +489,83 @@
           </div>
         </div>
     </div>
+
+    <!-- Add Via Stops Data Offcanvas -->
+
+    <div class="offcanvas offcanvas-end" style="width: 40%;" tabindex="-1" id="stop_data_offcanvas" aria-labelledby="offcanvasLabel-stop_data_offcanvas" data-bs-backdrop="false">
+        <form style="margin-bottom:0px;" id="ViaStopsCreateForm" action="{% url 'add_travel_mode_cost' ins.id %}" method="post" class="form">
+            <div class="offcanvas-header  light-orange-bg">
+            <h5 class="offcanvas-title" id="offcanvasLabel-stop_data_offcanvas">Add Via/Lay Overs/Changing</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close" style="margin-right:10px;"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="col-md-12" id="add_via_form_div">
+                    
+                    <div id="error-msgs" class="alert alert-danger" style="display:none;padding: 5px;"></div>
+                        {% csrf_token %}
+                        <input type="hidden" name="id">
+                    </div>
+
+                    <div class="row" style="margin-bottom:10px;">
+                        <div class="col-md-6">
+                            <label for="select_travel_mode" class="form-label">Select Travel Mode</label>
+                            <select name="travel_mode" id="select_travel_mode" class="form-control form-fields">
+                                <option value="0">----------</option>
+                                {% for travel_mode_key, travel_mode_val in travel_modes.items %}
+                                    <option value="{{travel_mode_key}}">{{travel_mode_val.travel_name}}</option>
+                                {% endfor %}
+                            </select> 
+                        </div>
+                        <div class="col-md-6">
+                            <label for="travel_details" class="form-label">Travelling From - To</label>
+                            <input type="text" id="travel_details" value="-" readonly class="form-control form-fields">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom:5px;">
+                        <div class="col-md-6">
+                            <label for="create_halt_name" class="form-label">Halt Name</label>
+                            <input class="form-control form_fields" type="text" id="create_halt_name" value="">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="create_place" class="form-label">Place</label>
+                            <input class="form-control form_fields" type="text" id="create_place" value="">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom:5px;">
+                        <div class="col-md-6">
+                            <label for="create_start_time" class="form-label">Halt Start Time</label>
+                            <input class="form-control form_fields" type="text" id="create_start_time" value="" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="create_stop_time" class="form-label">Halt Stop Time</label>
+                            <input class="form-control form_fields" type="text" id="create_stop_time" value="" readonly>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom:5px;">
+                        <div class="col-md-12">
+                            <label for="create_next_planned_stop" class="form-label">Next Stop (Name if any)</label>
+                            <input class="form-control form_fields" type="text" id="create_next_planned_stop" value="">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top:10px;">
+                        <div class="col-md-12" style="text-align: end;">
+                            <button id="via_start_button" type="button" class="btn btn-sm btn-info">Start (Via Stop Time)</button>
+                            <button style="display:none" id="via_stop_button" type="button" class="btn btn-sm btn-success">Stop - (Via Stop Time)</button>
+                            <button style="display:none" id="via_skip_stop" type="button" class="btn btn-sm btn-danger">Skip Via Stop</button>
+                        </div>
+                    </div>       
+                </div>
+                <div class="offcanvas-footer canvas-footer">
+                    <button type="button" class="btn btn-sm bordered-button" data-bs-dismiss="offcanvas" aria-label="Close">Close</button>
+                    <button type="button" class="btn btn-sm bordered-button" onclick="submit_travel_mode_cost_form()" style="margin-right:10px;">Save changes</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <!-- -->
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -446,6 +577,8 @@
             // =========================================================
 
             const travel_class_type = JSON.parse('{{travel_class_type|safe}}');
+
+            const travel_modes = JSON.parse('{{travel_modes_json|safe}}');
 
             html = "";
             $.each(travel_class_type["1"], function(key,value){
@@ -467,6 +600,36 @@
 
                 $("#id_travel_mode-travel_class_type").empty().append(html);
             });
+
+
+            // Travel Mode on Change in ViaStops
+            //============================================================
+
+            $("select#select_travel_mode").on('change', function(){
+                if($(this).val() > 0){
+                    $("input#travel_details").val(travel_modes[$(this).val()]["from_to"]);
+                }else{
+                    $("input#travel_details").val("-");
+                }
+            });
+
+            // Next Stop -- Show Skip Button on Change
+            // ===========================================================
+
+            $("input#create_next_planned_stop").on("input", function(){
+                inp = $(this).val();
+
+                if(inp.trim().length > 0){
+                    $("button#via_skip_stop").css("display", "inline-block");
+                }else{
+                    $("button#via_skip_stop").css("display", "none");
+                }
+            });
+
+            $("button#via_start_button").on("click", function(){
+                $("button#via_stop_button").css("display", "inline-block");
+            });
+
         });
 
         // Travel Mode & Cost Creation

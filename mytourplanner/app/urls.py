@@ -1,6 +1,7 @@
 import app.views as app_view
 import app.tourdata_views as tour_view
 import app.travelmode_view as travel_mode
+import app.via_stops as via_stops
 from django.urls import path
 from django.conf.urls.static import static
 from django.conf import settings
@@ -46,4 +47,16 @@ urlpatterns += [
 urlpatterns += [
     path("add_travel_mode_cost/<int:id>/", travel_mode.add_travel_mode_cost, name="add_travel_mode_cost"),
 ]
+
+
+# CRUD ViaStops
+urlpatterns += [
+    path("add_via_stops/", via_stops.add_via_stops, name="add_via_stops"),
+    path("edit_via_stops/<int:id>/", via_stops.edit_via_stops, name="edit_via_stops"),
+    path("delete_via_stops/<int:id>/", via_stops.delete_via_stops, name="delete_via_stops"),
+    path("start_via_stop_time/<int:id>/", via_stops.start_via_stop_time, name="start_via_stop_time"),
+    path("stop_via_stop_time/<int:id>/", via_stops.stop_via_stop_time, name="stop_via_stop_time"),
+    path("clear_via_stop_time/<int:id>/", via_stops.clear_via_stop_time, name="clear_via_stop_time"),
+]
+
 
